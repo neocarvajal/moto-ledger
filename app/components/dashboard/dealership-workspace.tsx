@@ -10,6 +10,7 @@ import {
 import { useConnectedWallet } from "@solana/kit-plugin-wallet/react";
 import { toast } from "sonner";
 import { useAppClient } from "../../lib/client-provider";
+import { notifyTransactionSuccess } from "../../lib/transaction-toast";
 import {
   deriveConcesionarioPda,
   deriveRegistroGlobalPda,
@@ -127,7 +128,11 @@ export function DealershipWorkspace({ activeModule }: { activeModule: string }) 
         nombreConcesionario: name.trim(),
         rifConcesionario: rif.trim(),
       });
-      await instruction.sendTransaction();
+      const result = await instruction.sendTransaction();
+      notifyTransactionSuccess(
+        "Concesionario registrado y seleccionado.",
+        result.context.signature
+      );
       const created = await client.registro.accounts.concesionario.fetch(concesionario);
       const record = { address: concesionario, data: created.data };
       setDealerships((current) => [...current, record].sort(
@@ -137,7 +142,7 @@ export function DealershipWorkspace({ activeModule }: { activeModule: string }) 
       setShowCreate(false);
       setName("");
       setRif("");
-      toast.success("Concesionario registrado y seleccionado.");
+
     } catch (error) {
       console.error(error);
       toast.error(
