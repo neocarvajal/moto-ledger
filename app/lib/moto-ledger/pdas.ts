@@ -48,6 +48,13 @@ export async function deriveClientePda(owner: Address, cedulaCliente: number) {
   });
 }
 
+export async function deriveVentaPda(moto: Address) {
+  return getProgramDerivedAddress({
+    programAddress: REGISTRO_PROGRAM_ADDRESS,
+    seeds: [seed("venta"), key(moto)],
+  });
+}
+
 export async function deriveGarantiaPda(serial: string) {
   return getProgramDerivedAddress({
     programAddress: REGISTRO_PROGRAM_ADDRESS,
