@@ -197,7 +197,7 @@ export function SalesManagement({
       return;
     }
     if (!serial) {
-      toast.error("Selecciona una motocicleta disponible.");
+      toast.error("Selecciona una moto disponible.");
       return;
     }
 
@@ -222,8 +222,8 @@ export function SalesManagement({
       if (customer.data.owner !== owner) throw new Error("El cliente no pertenece a la wallet conectada.");
 
       const motorcycle = motorcycles.find((item) => item.data.serial === serial);
-      if (!motorcycle) throw new Error("La motocicleta seleccionada ya no está disponible.");
-      if (motorcycle.data.vendida) throw new Error("Esta motocicleta ya fue vendida.");
+      if (!motorcycle) throw new Error("La moto seleccionada ya no está disponible.");
+      if (motorcycle.data.vendida) throw new Error("Esta moto ya fue vendida.");
 
       const [venta] = await deriveVentaPda(address(motorcycle.address));
       const instruction = client.registro.instructions.registrarVenta({
@@ -258,7 +258,7 @@ export function SalesManagement({
           <div>
             <p className="text-[9px] font-bold tracking-[0.16em] text-[#e60012]">COMERCIALIZACIÓN</p>
             <h2 className="mt-2 text-[15px] font-bold text-[#252a30]">Registrar venta</h2>
-            <p className="mt-1 text-[10px] text-[#858d96]">Asocia una motocicleta disponible con un cliente registrado.</p>
+            <p className="mt-1 text-[10px] text-[#858d96]">Asocia una moto disponible con un cliente registrado.</p>
           </div>
           <button type="button" onClick={() => void loadData()} disabled={loading} className="rounded-lg border border-[#e2e5e8] px-3 py-2 text-[10px] font-semibold text-[#555e68] hover:bg-[#f7f8fa] disabled:opacity-50">
             {loading ? "Actualizando…" : "Actualizar datos"}
@@ -282,7 +282,7 @@ export function SalesManagement({
 
         <form onSubmit={handleSubmit} className="mt-6 grid gap-4 border-t border-[#eff0f2] pt-5 sm:grid-cols-2">
           <label className="block sm:col-span-2">
-            <span className="mb-1.5 block text-[10px] font-semibold text-[#555e68]">Motocicleta disponible</span>
+            <span className="mb-1.5 block text-[10px] font-semibold text-[#555e68]">Moto disponible</span>
             <select value={serial} onChange={(event) => setSerial(event.target.value)} required className="w-full rounded-lg border border-[#e2e5e8] bg-white px-3 py-2.5 text-[11px] outline-none focus:border-[#e60012]">
               {availableMotorcycles.length === 0 ? <option value="">No hay unidades disponibles</option> : availableMotorcycles.map((item) => (
                 <option key={item.address} value={item.data.serial}>
@@ -290,7 +290,7 @@ export function SalesManagement({
                 </option>
               ))}
             </select>
-            {availableMotorcycles.length === 0 && <span className="mt-1 block text-[9px] text-[#a0a6ad]">Registra una motocicleta antes de crear una venta.</span>}
+            {availableMotorcycles.length === 0 && <span className="mt-1 block text-[9px] text-[#a0a6ad]">Registra una moto antes de crear una venta.</span>}
           </label>
 
           <div className="sm:col-span-2">
@@ -327,7 +327,7 @@ export function SalesManagement({
           <div className="overflow-x-auto">
             <table className="w-full min-w-[780px] text-left">
               <thead className="bg-[#fafbfc] text-[9px] font-bold uppercase tracking-wide text-[#9299a1]">
-                <tr><th className="px-6 py-3">Fecha</th><th className="px-4 py-3">Cliente PDA</th><th className="px-4 py-3">Motocicleta PDA</th><th className="px-4 py-3 text-right">Precio</th><th className="px-6 py-3 text-right">Venta PDA</th><th className="px-4 py-3 text-right">Detalle</th></tr>
+                <tr><th className="px-6 py-3">Fecha</th><th className="px-4 py-3">Cliente PDA</th><th className="px-4 py-3">Moto PDA</th><th className="px-4 py-3 text-right">Precio</th><th className="px-6 py-3 text-right">Venta PDA</th><th className="px-4 py-3 text-right">Detalle</th></tr>
               </thead>
               <tbody className="divide-y divide-[#f0f1f3]">
                 {sales.map((sale) => (
@@ -395,7 +395,7 @@ export function SalesManagement({
                 <div className="mt-3 grid gap-2 text-[10px] sm:grid-cols-2">
                   <p><span className="text-[#9299a1]">Concesionario:</span> <span className="break-all font-mono">{saleDetails.sale.data.concesionario}</span></p>
                   <p><span className="text-[#9299a1]">Cliente:</span> <span className="break-all font-mono">{saleDetails.sale.data.cliente}</span></p>
-                  <p className="sm:col-span-2"><span className="text-[#9299a1]">Motocicleta:</span> <span className="break-all font-mono">{saleDetails.sale.data.moto}</span></p>
+                  <p className="sm:col-span-2"><span className="text-[#9299a1]">Moto:</span> <span className="break-all font-mono">{saleDetails.sale.data.moto}</span></p>
                 </div>
               </div>
 
@@ -413,7 +413,7 @@ export function SalesManagement({
                 </div>
 
                 <div className="rounded-xl border border-[#eff0f2] p-4">
-                  <h3 className="text-[11px] font-bold text-[#252a30]">Motocicleta</h3>
+                  <h3 className="text-[11px] font-bold text-[#252a30]">Moto</h3>
                   <p className="mt-2 text-[14px] font-bold text-[#252a30]">{saleDetails.motorcycle.marca} {saleDetails.motorcycle.modelo}</p>
                   <div className="mt-3 space-y-2 text-[10px] text-[#68717b]">
                     <p>Serial: <strong className="font-mono text-[#252a30]">{saleDetails.motorcycle.serial}</strong></p>
