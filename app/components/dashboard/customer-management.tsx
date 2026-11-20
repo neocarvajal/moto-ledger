@@ -5,6 +5,7 @@ import { address } from "@solana/kit";
 import { useConnectedWallet } from "@solana/kit-plugin-wallet/react";
 import { toast } from "sonner";
 import { useAppClient } from "../../lib/client-provider";
+import { notifyTransactionSuccess } from "../../lib/transaction-toast";
 import { deriveClientePda } from "../../lib/moto-ledger/pdas";
 import type { Cliente } from "../../lib/moto-ledger/generated/src/generated/accounts";
 
@@ -92,11 +93,14 @@ export function CustomerManagement({
         cedulaCliente: id,
         nombreCliente: normalizedName,
       });
-      await instruction.sendTransaction();
+      const result = await instruction.sendTransaction();
+      notifyTransactionSuccess(
+        "Cliente registrado correctamente en Solana.",
+        result.context.signature
+      );
       const created = await client.registro.accounts.cliente.fetch(cliente);
       setCustomer({ address: cliente, data: created.data });
       await onRegistered();
-      toast.success("Cliente registrado correctamente en Solana.");
       setName("");
       setCedula("");
       setSearchCedula(String(id));
