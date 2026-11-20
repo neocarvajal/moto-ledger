@@ -2,6 +2,7 @@ import {
   getAddressEncoder,
   getProgramDerivedAddress,
   getU32Encoder,
+  getU64Encoder,
   getUtf8Encoder,
   type Address,
 } from "@solana/kit";
@@ -59,5 +60,16 @@ export async function deriveGarantiaPda(serial: string) {
   return getProgramDerivedAddress({
     programAddress: REGISTRO_PROGRAM_ADDRESS,
     seeds: [seed("garantia"), seed(serial)],
+  });
+}
+
+export async function deriveServicioPda(moto: Address, currentServices: bigint) {
+  return getProgramDerivedAddress({
+    programAddress: REGISTRO_PROGRAM_ADDRESS,
+    seeds: [
+      seed("servicio"),
+      key(moto),
+      getU64Encoder().encode(currentServices),
+    ],
   });
 }
