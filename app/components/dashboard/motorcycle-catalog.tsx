@@ -240,6 +240,17 @@ export function MotorcycleCatalog({
                   <p className="mt-1 text-[9px] text-[#a0a6ad]">
                     {data.servicios.toString()} servicio(s) · {data.totalReclamaciones.toString()} reclamación(es)
                   </p>
+                  <a
+                    href={`https://explorer.solana.com/address/${motorcycle.address}?cluster=devnet`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 inline-flex max-w-full flex-wrap items-center gap-1 font-mono text-[9px] text-[#68717b] underline decoration-dotted underline-offset-2 transition hover:text-[#e60012]"
+                    title="Ver cuenta de la motocicleta en Solana Explorer (Devnet)"
+                  >
+                    <span className="font-sans font-semibold no-underline">PDA:</span>
+                    <span className="break-all">{motorcycle.address}</span>
+                    <span aria-hidden="true">↗</span>
+                  </a>
                 </div>
                 <button
                   type="button"
