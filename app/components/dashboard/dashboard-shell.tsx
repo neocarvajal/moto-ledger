@@ -247,16 +247,22 @@ export function DashboardShell() {
             <p className="mt-1 text-[12px] font-bold text-[#424950]">{page.title}</p>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
-            <div className="hidden items-center gap-2 rounded-lg bg-[#f7f8fa] px-3 py-2 sm:flex">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#2878d0]" />
-              <span className="text-[10px] font-bold text-[#66707a]">SOLANA</span>
-              <span className="text-[9px] text-[#a0a6ad]">/</span>
-              <span className="text-[10px] font-semibold text-[#66707a]">DEVNET</span>
-            </div>
             <ClusterSelect />
             <WalletButton />
           </div>
         </header>
+
+        <nav className="flex gap-1 overflow-x-auto border-b border-[#e9ebee] bg-white px-4 py-2 lg:hidden" aria-label="Navegación móvil">
+          {navigation.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => setActive(item.id)}
+              className={`shrink-0 rounded-lg px-3 py-2 text-[10px] font-semibold transition ${active === item.id ? "bg-[#fff0f1] text-[#d90011]" : "text-[#737b84] hover:bg-[#f6f7f8]"}`}
+            >
+              {item.label}
+            </button>
+          ))}
+        </nav>
 
         <main className="mx-auto max-w-[1440px] px-5 py-7 sm:px-8 sm:py-9">
           <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
