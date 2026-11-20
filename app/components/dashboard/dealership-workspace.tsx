@@ -24,6 +24,7 @@ import { REGISTRO_PROGRAM_ADDRESS } from "../../lib/moto-ledger/generated/src/ge
 import { MotorcycleRegistration } from "./motorcycle-registration";
 import { CustomerManagement } from "./customer-management";
 import { SalesManagement } from "./sales-management";
+import { ServicesManagement } from "./services-management";
 
 type DealershipRecord = { address: string; data: Concesionario };
 
@@ -291,6 +292,19 @@ export function DealershipWorkspace({ activeModule }: { activeModule: string }) 
       {dealership && activeModule === "sales" && (
         <div className="xl:col-span-2">
           <SalesManagement
+            concesionario={dealership.address}
+            nombreConcesionario={dealership.data.nombreConcesionario}
+            onRegistered={async () => {
+              const refreshed = await client.registro.accounts.concesionario.fetch(address(dealership.address));
+              setDealership({ address: dealership.address, data: refreshed.data });
+            }}
+          />
+        </div>
+      )}
+
+      {dealership && activeModule === "services" && (
+        <div className="xl:col-span-2">
+          <ServicesManagement
             concesionario={dealership.address}
             nombreConcesionario={dealership.data.nombreConcesionario}
             onRegistered={async () => {
