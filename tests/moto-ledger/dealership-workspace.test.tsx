@@ -149,8 +149,8 @@ describe("MotoLedger dealership workspace", () => {
     render(<DealershipWorkspace activeModule="workspace" />);
 
     await waitFor(() => {
-      expect(screen.getByText("BERA MOTORS")).toBeTruthy();
-      expect(screen.getByText("MOTOS TORO")).toBeTruthy();
+      expect(screen.getByRole("option", { name: /BERA MOTORS/ })).toBeTruthy();
+      expect(screen.getByRole("option", { name: /MOTOS TORO/ })).toBeTruthy();
     });
 
     const selector = screen.getByLabelText("Concesionarios de esta wallet") as HTMLSelectElement;
@@ -176,7 +176,7 @@ describe("MotoLedger dealership workspace", () => {
     const selector = await screen.findByLabelText("Concesionarios de esta wallet");
     fireEvent.change(selector, { target: { value: "dealership-b" } });
 
-    expect(screen.getByText("MOTOS TORO")).toBeTruthy();
+    expect(screen.getByRole("option", { name: /MOTOS TORO/ })).toBeTruthy();
     expect(screen.getByText("J345678901")).toBeTruthy();
   });
 
@@ -198,7 +198,7 @@ describe("MotoLedger dealership workspace", () => {
     fireEvent.click(screen.getByRole("button", { name: "Registrar concesionario" }));
 
     await waitFor(() => {
-      expect(screen.getByText("NUEVO MOTOR")).toBeTruthy();
+      expect(screen.getByRole("option", { name: /NUEVO MOTOR/ })).toBeTruthy();
     });
     expect(mocks.deriveGlobal).toHaveBeenCalledOnce();
     expect(mocks.deriveDealership).toHaveBeenCalledWith(
