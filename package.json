@@ -9,6 +9,7 @@
     "lint": "eslint",
     "start": "next start",
     "test": "vitest run",
+    "test:devnet": "vitest run tests/moto-ledger/devnet.integration.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "description": "Next.js, Tailwind, @solana/kit wallet + on-chain actions",
