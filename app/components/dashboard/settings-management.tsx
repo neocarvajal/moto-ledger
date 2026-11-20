@@ -134,7 +134,7 @@ export function SettingsManagement({
         <div>
           <p className="text-[9px] font-bold tracking-[0.16em] text-[#e60012]">POLÍTICA DE POSVENTA</p>
           <h2 className="mt-2 text-[15px] font-bold text-[#252a30]">Configuración de garantía</h2>
-          <p className="mt-1 text-[10px] text-[#858d96]">Define la cobertura que se aplicará a las próximas motocicletas que registres.</p>
+          <p className="mt-1 text-[10px] text-[#858d96]">Define la cobertura que se aplicará a las próximas motos que registres.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="mt-5 space-y-4">
@@ -159,7 +159,7 @@ export function SettingsManagement({
 
           <div className="rounded-lg border border-[#f1dfe0] bg-[#fff9f9] p-4">
             <p className="text-[10px] font-bold text-[#8e343b]">Importante sobre las garantías existentes</p>
-            <p className="mt-1 text-[9px] leading-relaxed text-[#95666a]">Esta configuración actualiza los parámetros del concesionario. No modifica retroactivamente las cuentas de garantía que ya fueron creadas para motocicletas registradas anteriormente.</p>
+            <p className="mt-1 text-[9px] leading-relaxed text-[#95666a]">Esta configuración actualiza los parámetros del concesionario. No modifica retroactivamente las cuentas de garantía que ya fueron creadas para motos registradas anteriormente.</p>
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#eff0f2] pt-4">
