@@ -3,13 +3,7 @@
 **Gestión de concesionarios y trazabilidad de motocicletas sobre Solana.**
 
 <p align="center">
-  <a href="assets/moto-ledger-preview-.gif">
-    <img src="assets/moto-ledger-preview.png" alt="Vista previa del dashboard de MotoLedger" width="100%">
-  </a>
-</p>
-
-<p align="center">
-  <em>Haz clic en la imagen para ver la demostración animada de MotoLedger.</em>
+  <img src="assets/moto-ledger-preview-.gif" alt="Demostración animada del dashboard de MotoLedger" width="100%">
 </p>
 
 MotoLedger es una dApp que permite a un concesionario administrar su operación desde un dashboard web y registrar información clave directamente en la blockchain. Cada concesionario, motocicleta, cliente, venta y servicio se representa mediante cuentas on-chain y direcciones determinísticas (PDA), lo que facilita consultar y verificar el historial de las operaciones.
