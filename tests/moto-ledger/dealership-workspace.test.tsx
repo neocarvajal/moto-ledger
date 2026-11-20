@@ -154,7 +154,7 @@ describe("MotoLedger dealership workspace", () => {
       expect(screen.getByRole("option", { name: /MOTOS TORO/ })).toBeTruthy();
     });
 
-    const selector = screen.getByLabelText("Concesionarios de esta wallet") as HTMLSelectElement;
+    const selector = screen.getByRole("combobox") as HTMLSelectElement;
     expect(selector.value).toBe("dealership-a");
     expect(Array.from(selector.options).map((option) => option.value)).toEqual([
       "dealership-a",
@@ -174,7 +174,7 @@ describe("MotoLedger dealership workspace", () => {
     setAccountResults();
     render(<DealershipWorkspace activeModule="workspace" />);
 
-    const selector = await screen.findByLabelText("Concesionarios de esta wallet");
+    const selector = await screen.findByRole("combobox");
     fireEvent.change(selector, { target: { value: "dealership-b" } });
 
     expect(screen.getByRole("option", { name: /MOTOS TORO/ })).toBeTruthy();
