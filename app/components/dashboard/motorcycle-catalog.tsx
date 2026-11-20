@@ -154,7 +154,8 @@ export function MotorcycleCatalog({
   ).length;
 
   return (
-    <section className="rounded-xl border border-[#e9ebee] bg-white p-6 shadow-[0_2px_8px_rgba(24,32,40,0.025)]">
+    <>
+      <section className="rounded-xl border border-[#e9ebee] bg-white p-6 shadow-[0_2px_8px_rgba(24,32,40,0.025)]">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-[9px] font-bold tracking-[0.16em] text-[#e60012]">
@@ -295,6 +296,6 @@ export function MotorcycleCatalog({
           </section>
         </div>
       )}
-
+    </>
   );
 }
