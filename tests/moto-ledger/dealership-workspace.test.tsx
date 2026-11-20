@@ -1,5 +1,5 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { DealershipWorkspace } from "../../app/components/dashboard/dealership-workspace";
 
 const mocks = vi.hoisted(() => {
@@ -125,7 +125,7 @@ function setAccountResults() {
   );
 }
 
-describe("MotoLedger dealership workspace", () => {
+describe("MotoLedger dealership workspace", () => {\n  afterEach(() => cleanup());
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.activeWallet = mocks.connected;
