@@ -209,7 +209,6 @@ export function SalesManagement({
       setCedula("");
       setPrice("");
       setCustomerName("");
-      setCustomerAddress("");
       await Promise.all([loadData(), onRegistered()]);
     } catch (error) {
       console.error(error);
@@ -264,7 +263,7 @@ export function SalesManagement({
           <div className="sm:col-span-2">
             <span className="mb-1.5 block text-[10px] font-semibold text-[#555e68]">Cliente registrado</span>
             <div className="flex flex-col gap-2 sm:flex-row">
-              <input value={cedula} onChange={(event) => { setCedula(event.target.value.replace(/[^0-9]/g, "")); setCustomerName(""); setCustomerAddress(""); }} inputMode="numeric" maxLength={10} required placeholder="Cédula de identidad" className="min-w-0 flex-1 rounded-lg border border-[#e2e5e8] px-3 py-2.5 font-mono text-[11px] outline-none focus:border-[#e60012]" />
+              <input value={cedula} onChange={(event) => { setCedula(event.target.value.replace(/[^0-9]/g, "")); setCustomerName(""); }} inputMode="numeric" maxLength={10} required placeholder="Cédula de identidad" className="min-w-0 flex-1 rounded-lg border border-[#e2e5e8] px-3 py-2.5 font-mono text-[11px] outline-none focus:border-[#e60012]" />
               <button type="button" onClick={() => void handleCustomerLookup()} disabled={!cedula} className="rounded-lg border border-[#e2e5e8] px-4 py-2.5 text-[10px] font-semibold text-[#555e68] hover:bg-[#f7f8fa] disabled:opacity-50">Verificar cliente</button>
             </div>
             {customerName && <p className="mt-2 text-[10px] font-semibold text-[#16845a]">✓ {customerName} · Cliente verificado en Solana</p>}
