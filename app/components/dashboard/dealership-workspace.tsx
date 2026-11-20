@@ -330,7 +330,8 @@ export function DealershipWorkspace({ activeModule }: { activeModule: string }) 
           />
         </div>
       )}
-\n      {dealership && activeModule === "services" && (
+
+      {dealership && activeModule === "services" && (
         <div className="xl:col-span-2">
           <ServicesManagement
             concesionario={dealership.address}
