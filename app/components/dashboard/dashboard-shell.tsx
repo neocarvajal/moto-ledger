@@ -11,7 +11,7 @@ const navigation = [
   { id: "customers", label: "Clientes", icon: "♙" },
   { id: "sales", label: "Ventas", icon: "↗" },
   { id: "services", label: "Servicios", icon: "⚙" },
-  { id: "warranties", label: "Garantías", icon: "◇", group: "POSVENTA" },
+  { id: "warranties", label: "Garantías", icon: "◇", group: "POSVENTA", disabled: true },
   { id: "claims", label: "Reclamaciones", icon: "▤" },
   { id: "settings", label: "Configuración", icon: "☷", group: "SISTEMA" },
 ] as const;
@@ -91,11 +91,14 @@ function Sidebar({
                 return (
                   <button
                     key={item.id}
-                    onClick={() => onNavigate(item.id)}
-                    className={`group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[12px] font-semibold transition ${selected ? "bg-[#fff0f1] text-[#d90011]" : "text-[#69717a] hover:bg-[#f6f7f8] hover:text-[#252a30]"}`}
+                    onClick={() => !("disabled" in item && item.disabled) && onNavigate(item.id)}
+                    disabled={"disabled" in item && item.disabled}
+                    title={"disabled" in item && item.disabled ? "Módulo próximamente" : undefined}
+                    className={`group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[12px] font-semibold transition ${"disabled" in item && item.disabled ? "cursor-not-allowed opacity-40" : selected ? "bg-[#fff0f1] text-[#d90011]" : "text-[#69717a] hover:bg-[#f6f7f8] hover:text-[#252a30]"}`}
                   >
                     <span className={`flex h-5 w-5 items-center justify-center text-[17px] ${selected ? "text-[#e60012]" : "text-[#9aa1a9] group-hover:text-[#555e68]"}`}>{item.icon}</span>
                     {item.label}
+                    {"disabled" in item && item.disabled && <span className="ml-auto text-[8px] font-medium tracking-wide">PRONTO</span>}
                     {selected && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-[#e60012]" />}
                   </button>
                 );
@@ -178,8 +181,10 @@ export function DashboardShell() {
           {navigation.map((item) => (
             <button
               key={item.id}
-              onClick={() => setActive(item.id)}
-              className={`shrink-0 rounded-lg px-3 py-2 text-[10px] font-semibold transition ${active === item.id ? "bg-[#fff0f1] text-[#d90011]" : "text-[#737b84] hover:bg-[#f6f7f8]"}`}
+              onClick={() => !("disabled" in item && item.disabled) && setActive(item.id)}
+              disabled={"disabled" in item && item.disabled}
+              title={"disabled" in item && item.disabled ? "Módulo próximamente" : undefined}
+              className={`shrink-0 rounded-lg px-3 py-2 text-[10px] font-semibold transition ${"disabled" in item && item.disabled ? "cursor-not-allowed opacity-40" : active === item.id ? "bg-[#fff0f1] text-[#d90011]" : "text-[#737b84] hover:bg-[#f6f7f8]"}`}
             >
               {item.label}
             </button>
