@@ -2,15 +2,13 @@
 
 import { useAction } from "@solana/react";
 import { toast } from "sonner";
-import { useCluster } from "../../components/cluster-context";
+import { notifyTransactionSuccess } from "../transaction-toast";
 import { parseTransactionError } from "../errors";
 
 type TxResult = { context: { signature: string } };
 type ErrorMessageResolver = (error: unknown) => string | undefined;
 
 export function useSend() {
-  const { getExplorerUrl } = useCluster();
-
   const { dispatchAsync, isRunning } = useAction(
     async (
       _signal: AbortSignal,
@@ -21,18 +19,7 @@ export function useSend() {
       try {
         const result = await action();
         const signature = result.context.signature;
-        toast.success(successMessage, {
-          description: (
-            <a
-              href={getExplorerUrl(`/tx/${signature}`)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline"
-            >
-              View transaction
-            </a>
-          ),
-        });
+        notifyTransactionSuccess(successMessage, signature);
         return signature;
       } catch (err) {
         console.error(err);
