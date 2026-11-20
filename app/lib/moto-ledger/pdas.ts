@@ -1,6 +1,7 @@
 import {
   getAddressEncoder,
   getProgramDerivedAddress,
+  getU32Encoder,
   getUtf8Encoder,
   type Address,
 } from "@solana/kit";
@@ -37,6 +38,13 @@ export async function deriveMotoPda(serial: string, concesionario: Address) {
   return getProgramDerivedAddress({
     programAddress: REGISTRO_PROGRAM_ADDRESS,
     seeds: [seed("registro_moto"), seed(serial), key(concesionario)],
+  });
+}
+
+export async function deriveClientePda(owner: Address, cedulaCliente: number) {
+  return getProgramDerivedAddress({
+    programAddress: REGISTRO_PROGRAM_ADDRESS,
+    seeds: [seed("cliente"), key(owner), getU32Encoder().encode(cedulaCliente)],
   });
 }
 
