@@ -77,7 +77,7 @@ export function MotorcycleCatalog({
       setMotorcycles(records);
     } catch (error) {
       console.error("No se pudo cargar el catálogo:", error);
-      toast.error("No se pudo consultar el catálogo de motocicletas.");
+      toast.error("No se pudo consultar el catálogo de motos.");
     } finally {
       setLoading(false);
     }
@@ -98,7 +98,7 @@ export function MotorcycleCatalog({
       motorcycle.data.servicios > 0n ||
       motorcycle.data.totalReclamaciones > 0n
     ) {
-      toast.error("Esta motocicleta tiene un historial que debe conservarse.");
+      toast.error("Esta moto tiene un historial que debe conservarse.");
       return;
     }
 
@@ -116,7 +116,7 @@ export function MotorcycleCatalog({
         latestMoto.data.totalReclamaciones > 0n
       ) {
         throw new Error(
-          "La motocicleta cambió de estado y ya no cumple las condiciones para eliminarse."
+          "La moto cambió de estado y ya no cumple las condiciones para eliminarse."
         );
       }
 
@@ -131,7 +131,7 @@ export function MotorcycleCatalog({
       const result = await instruction.sendTransaction();
 
       notifyTransactionSuccess(
-        "Motocicleta y garantía eliminadas del catálogo.",
+        "Moto y garantía eliminadas del catálogo.",
         result.context.signature
       );
 
@@ -148,7 +148,7 @@ export function MotorcycleCatalog({
       toast.error(
         error instanceof Error
           ? error.message
-          : "No se pudo eliminar la motocicleta."
+          : "No se pudo eliminar la moto."
       );
     } finally {
       setDeleting(null);
@@ -171,7 +171,7 @@ export function MotorcycleCatalog({
             CATÁLOGO DEL CONCESIONARIO
           </p>
           <h2 className="mt-2 text-[15px] font-bold text-[#252a30]">
-            Inventario de motocicletas
+            Inventario de motos
           </h2>
           <p className="mt-1 text-[10px] text-[#858d96]">
             Consulta las unidades registradas y elimina únicamente las que no tengan historial.
@@ -202,7 +202,7 @@ export function MotorcycleCatalog({
         </p>
       ) : motorcycles.length === 0 ? (
         <p className="mt-5 rounded-lg bg-[#f7f8fa] p-5 text-center text-[11px] text-[#858d96]">
-          Este concesionario todavía no tiene motocicletas registradas.
+          Este concesionario todavía no tiene motos registradas.
         </p>
       ) : (
         <div className="mt-4 divide-y divide-[#eff0f2]">
@@ -245,7 +245,7 @@ export function MotorcycleCatalog({
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mt-2 inline-flex max-w-full flex-wrap items-center gap-1 font-mono text-[9px] text-[#68717b] underline decoration-dotted underline-offset-2 transition hover:text-[#e60012]"
-                    title="Ver cuenta de la motocicleta en Solana Explorer (Devnet)"
+                    title="Ver cuenta de la moto en Solana Explorer (Devnet)"
                   >
                     <span className="font-sans font-semibold no-underline">PDA:</span>
                     <span className="break-all">{motorcycle.address}</span>
@@ -288,7 +288,7 @@ export function MotorcycleCatalog({
             <div className="flex items-start justify-between border-b border-[#eff0f2] px-6 py-5">
               <div>
                 <p className="text-[9px] font-bold tracking-[0.16em] text-[#e60012]">GESTIÓN DE INVENTARIO</p>
-                <h2 id="delete-motorcycle-title" className="mt-1 text-[17px] font-bold text-[#252a30]">Eliminar motocicleta</h2>
+                <h2 id="delete-motorcycle-title" className="mt-1 text-[17px] font-bold text-[#252a30]">Eliminar moto</h2>
                 <p className="mt-1 text-[10px] text-[#858d96]">Confirma que deseas retirar esta unidad del catálogo.</p>
               </div>
               <button type="button" onClick={() => setMotorcycleToDelete(null)} disabled={deleting !== null} aria-label="Cerrar confirmación" className="rounded-lg border border-[#e2e5e8] px-3 py-1.5 text-[12px] text-[#68717b] hover:bg-[#f7f8fa] disabled:opacity-40">✕</button>
@@ -305,7 +305,7 @@ export function MotorcycleCatalog({
                 </div>
               </div>
               <div className="space-y-2 text-[10px] leading-relaxed text-[#68717b]">
-                <p>Se cerrarán las cuentas on-chain de la motocicleta y su garantía.</p>
+                <p>Se cerrarán las cuentas on-chain de la moto y su garantía.</p>
                 <p className="font-semibold text-[#a33d45]">Esta operación no se puede deshacer. Los fondos recuperables de las cuentas cerradas se devolverán al propietario.</p>
               </div>
               <div className="flex flex-col-reverse gap-2 border-t border-[#eff0f2] pt-4 sm:flex-row sm:justify-end">
