@@ -23,9 +23,17 @@ import {
   getVentaDiscriminatorBytes,
   type Venta,
 } from "../../lib/moto-ledger/generated/src/generated/accounts/venta";
+import type { Cliente } from "../../lib/moto-ledger/generated/src/generated/accounts/cliente";
+import type { Concesionario } from "../../lib/moto-ledger/generated/src/generated/accounts/concesionario";
 
 type MotorcycleRecord = { address: string; data: Moto };
 type SaleRecord = { address: string; data: Venta };
+type SaleDetails = {
+  sale: SaleRecord;
+  customer: Cliente;
+  motorcycle: Moto;
+  dealership: Concesionario;
+};
 
 function parseCedula(value: string) {
   const parsed = Number(value.trim());
@@ -62,6 +70,8 @@ export function SalesManagement({
   const [customerName, setCustomerName] = useState("");
   const [loading, setLoading] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [detailLoading, setDetailLoading] = useState<string | null>(null);
+  const [saleDetails, setSaleDetails] = useState<SaleDetails | null>(null);
 
   const availableMotorcycles = useMemo(
     () => motorcycles.filter((item) => !item.data.vendida),
@@ -154,6 +164,29 @@ export function SalesManagement({
     } catch (error) {
       setCustomerName("");
       toast.error(error instanceof Error ? error.message : "No se encontró el cliente.");
+    }
+  };
+
+  const handleViewDetails = async (sale: SaleRecord) => {
+    setDetailLoading(sale.address);
+    setSaleDetails(null);
+    try {
+      const [customerAccount, motorcycleAccount, dealershipAccount] = await Promise.all([
+        client.registro.accounts.cliente.fetch(address(sale.data.cliente)),
+        client.registro.accounts.moto.fetch(address(sale.data.moto)),
+        client.registro.accounts.concesionario.fetch(address(sale.data.concesionario)),
+      ]);
+      setSaleDetails({
+        sale,
+        customer: customerAccount.data,
+        motorcycle: motorcycleAccount.data,
+        dealership: dealershipAccount.data,
+      });
+    } catch (error) {
+      console.error("No se pudieron consultar los detalles de la venta:", error);
+      toast.error(error instanceof Error ? error.message : "No se pudieron consultar los datos relacionados con esta venta.");
+    } finally {
+      setDetailLoading(null);
     }
   };
 
@@ -294,7 +327,7 @@ export function SalesManagement({
           <div className="overflow-x-auto">
             <table className="w-full min-w-[650px] text-left">
               <thead className="bg-[#fafbfc] text-[9px] font-bold uppercase tracking-wide text-[#9299a1]">
-                <tr><th className="px-6 py-3">Fecha</th><th className="px-4 py-3">Cliente PDA</th><th className="px-4 py-3">Motocicleta PDA</th><th className="px-4 py-3 text-right">Precio</th><th className="px-6 py-3 text-right">Venta PDA</th></tr>
+                <tr><th className="px-6 py-3">Fecha</th><th className="px-4 py-3">Cliente PDA</th><th className="px-4 py-3">Motocicleta PDA</th><th className="px-4 py-3 text-right">Precio</th><th className="px-6 py-3 text-right">Venta PDA</th><th className="px-4 py-3 text-right">Detalle</th></tr>
               </thead>
               <tbody className="divide-y divide-[#f0f1f3]">
                 {sales.map((sale) => (
@@ -304,6 +337,7 @@ export function SalesManagement({
                     <td className="px-4 py-3 font-mono">{shortAddress(sale.data.moto)}</td>
                     <td className="whitespace-nowrap px-4 py-3 text-right font-semibold text-[#252a30]">{formatAmount(sale.data.precioVenta)}</td>
                     <td className="px-6 py-3 text-right"><a href={`https://explorer.solana.com/address/${sale.address}?cluster=devnet`} target="_blank" rel="noopener noreferrer" className="font-mono text-[#68717b] underline decoration-dotted underline-offset-2 hover:text-[#e60012]">{shortAddress(sale.address)} ↗</a></td>
+                    <td className="px-4 py-3 text-right"><button type="button" onClick={() => void handleViewDetails(sale)} disabled={detailLoading !== null} className="whitespace-nowrap rounded-md border border-[#e2e5e8] px-2.5 py-1.5 text-[9px] font-semibold text-[#555e68] transition hover:border-[#e60012] hover:text-[#e60012] disabled:opacity-50">{detailLoading === sale.address ? "Cargando…" : "Ver detalles"}</button></td>
                   </tr>
                 ))}
               </tbody>
@@ -316,6 +350,103 @@ export function SalesManagement({
           </div>
         )}
       </section>
+
+      {detailLoading && !saleDetails && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#171b20]/40 p-4">
+          <div className="rounded-xl bg-white px-6 py-5 text-center shadow-xl">
+            <p className="text-[11px] font-semibold text-[#252a30]">Consultando datos on-chain…</p>
+            <p className="mt-1 text-[10px] text-[#858d96]">Leyendo las cuentas vinculadas a la venta.</p>
+          </div>
+        </div>
+      )}
+
+      {saleDetails && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-[#171b20]/50 p-4" onClick={() => setSaleDetails(null)}>
+          <section role="dialog" aria-modal="true" aria-labelledby="sale-details-title" onClick={(event) => event.stopPropagation()} className="my-auto max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white shadow-2xl">
+            <div className="sticky top-0 z-10 flex items-start justify-between border-b border-[#eff0f2] bg-white px-6 py-5">
+              <div>
+                <p className="text-[9px] font-bold tracking-[0.16em] text-[#e60012]">REGISTRO ON-CHAIN</p>
+                <h2 id="sale-details-title" className="mt-1 text-[17px] font-bold text-[#252a30]">Detalle de la venta</h2>
+                <p className="mt-1 font-mono text-[10px] text-[#858d96]">{shortAddress(saleDetails.sale.address)}</p>
+              </div>
+              <button type="button" onClick={() => setSaleDetails(null)} aria-label="Cerrar detalles" className="rounded-lg border border-[#e2e5e8] px-3 py-1.5 text-[12px] text-[#68717b] hover:bg-[#f7f8fa]">✕</button>
+            </div>
+
+            <div className="space-y-5 p-6">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="rounded-xl bg-[#f7f8fa] p-4">
+                  <p className="text-[9px] font-bold tracking-wide text-[#9299a1]">PRECIO DE VENTA</p>
+                  <p className="mt-2 text-[24px] font-bold text-[#252a30]">{formatAmount(saleDetails.sale.data.precioVenta)}</p>
+                  <p className="mt-1 text-[10px] text-[#858d96]">Monto almacenado en la cuenta Venta</p>
+                </div>
+                <div className="rounded-xl bg-[#f7f8fa] p-4">
+                  <p className="text-[9px] font-bold tracking-wide text-[#9299a1]">FECHA DE REGISTRO</p>
+                  <p className="mt-2 text-[14px] font-bold text-[#252a30]">{new Date(Number(saleDetails.sale.data.fechaVenta) * 1000).toLocaleString("es-VE")}</p>
+                  <p className="mt-1 text-[10px] text-[#858d96]">Timestamp guardado on-chain</p>
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-[#eff0f2] p-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <h3 className="text-[11px] font-bold text-[#252a30]">Cuenta Venta</h3>
+                  <a href={`https://explorer.solana.com/address/${saleDetails.sale.address}?cluster=devnet`} target="_blank" rel="noopener noreferrer" className="text-[9px] font-semibold text-[#e60012] hover:underline">Abrir en Explorer ↗</a>
+                </div>
+                <p className="mt-2 break-all font-mono text-[10px] text-[#68717b]">{saleDetails.sale.address}</p>
+                <div className="mt-3 grid gap-2 text-[10px] sm:grid-cols-2">
+                  <p><span className="text-[#9299a1]">Concesionario:</span> <span className="break-all font-mono">{saleDetails.sale.data.concesionario}</span></p>
+                  <p><span className="text-[#9299a1]">Cliente:</span> <span className="break-all font-mono">{saleDetails.sale.data.cliente}</span></p>
+                  <p className="sm:col-span-2"><span className="text-[#9299a1]">Motocicleta:</span> <span className="break-all font-mono">{saleDetails.sale.data.moto}</span></p>
+                </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="rounded-xl border border-[#eff0f2] p-4">
+                  <h3 className="text-[11px] font-bold text-[#252a30]">Cliente</h3>
+                  <p className="mt-2 text-[14px] font-bold text-[#252a30]">{saleDetails.customer.nombreCliente}</p>
+                  <div className="mt-3 space-y-2 text-[10px] text-[#68717b]">
+                    <p>Cédula: <strong className="text-[#252a30]">{saleDetails.customer.cedulaCliente}</strong></p>
+                    <p>ID cliente: <strong className="text-[#252a30]">{saleDetails.customer.idCliente}</strong></p>
+                    <p>Motos asociadas: <strong className="text-[#252a30]">{saleDetails.customer.totalMotosCliente}</strong></p>
+                    <p>Owner: <span className="break-all font-mono">{saleDetails.customer.owner}</span></p>
+                    <p>PDA: <a className="break-all font-mono text-[#e60012] hover:underline" href={`https://explorer.solana.com/address/${saleDetails.sale.data.cliente}?cluster=devnet`} target="_blank" rel="noopener noreferrer">{saleDetails.sale.data.cliente} ↗</a></p>
+                  </div>
+                </div>
+
+                <div className="rounded-xl border border-[#eff0f2] p-4">
+                  <h3 className="text-[11px] font-bold text-[#252a30]">Motocicleta</h3>
+                  <p className="mt-2 text-[14px] font-bold text-[#252a30]">{saleDetails.motorcycle.marca} {saleDetails.motorcycle.modelo}</p>
+                  <div className="mt-3 space-y-2 text-[10px] text-[#68717b]">
+                    <p>Serial: <strong className="font-mono text-[#252a30]">{saleDetails.motorcycle.serial}</strong></p>
+                    <p>Placa: <strong className="font-mono text-[#252a30]">{saleDetails.motorcycle.placa}</strong></p>
+                    <p>Color: <strong className="text-[#252a30]">{saleDetails.motorcycle.color}</strong></p>
+                    <p>Vendida: <strong className="text-[#252a30]">{saleDetails.motorcycle.vendida ? "Sí" : "No"}</strong></p>
+                    <p>Servicios: <strong className="text-[#252a30]">{saleDetails.motorcycle.servicios.toString()}</strong> · Reclamaciones: <strong className="text-[#252a30]">{saleDetails.motorcycle.totalReclamaciones.toString()}</strong></p>
+                    <p>Garantía PDA: <span className="break-all font-mono">{saleDetails.motorcycle.garantia}</span></p>
+                    <p>PDA: <a className="break-all font-mono text-[#e60012] hover:underline" href={`https://explorer.solana.com/address/${saleDetails.sale.data.moto}?cluster=devnet`} target="_blank" rel="noopener noreferrer">{saleDetails.sale.data.moto} ↗</a></p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-[#eff0f2] p-4">
+                <h3 className="text-[11px] font-bold text-[#252a30]">Concesionario</h3>
+                <p className="mt-2 text-[14px] font-bold text-[#252a30]">{saleDetails.dealership.nombreConcesionario}</p>
+                <div className="mt-3 grid gap-2 text-[10px] text-[#68717b] sm:grid-cols-2">
+                  <p>RIF: <strong className="text-[#252a30]">{saleDetails.dealership.rifConcesionario}</strong></p>
+                  <p>ID: <strong className="text-[#252a30]">{saleDetails.dealership.idConcesionario}</strong></p>
+                  <p>Total motos: <strong className="text-[#252a30]">{saleDetails.dealership.totalMotos.toString()}</strong></p>
+                  <p>Total clientes: <strong className="text-[#252a30]">{saleDetails.dealership.totalClientes}</strong></p>
+                  <p>Total ventas: <strong className="text-[#252a30]">{saleDetails.dealership.totalVentas.toString()}</strong></p>
+                  <p>Total servicios: <strong className="text-[#252a30]">{saleDetails.dealership.totalServicios.toString()}</strong></p>
+                  <p>Garantía (días): <strong className="text-[#252a30]">{saleDetails.dealership.duracionGarantiaDias}</strong></p>
+                  <p>Km máximo: <strong className="text-[#252a30]">{saleDetails.dealership.kilometrajeMaximo.toString()}</strong></p>
+                  <p className="sm:col-span-2">Owner: <span className="break-all font-mono">{saleDetails.dealership.owner}</span></p>
+                  <p className="sm:col-span-2">PDA: <a className="break-all font-mono text-[#e60012] hover:underline" href={`https://explorer.solana.com/address/${saleDetails.sale.data.concesionario}?cluster=devnet`} target="_blank" rel="noopener noreferrer">{saleDetails.sale.data.concesionario} ↗</a></p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      )}
     </div>
   );
 }
