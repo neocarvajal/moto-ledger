@@ -115,7 +115,7 @@ export function MotorcycleRegistration({
         </label>
         <div className="flex items-end sm:col-span-2 xl:col-span-3">
           <button type="submit" disabled={busy} className="w-full rounded-lg bg-[#e60012] px-4 py-2.5 text-[11px] font-semibold text-white transition hover:bg-[#c90010] disabled:opacity-50 sm:w-auto">
-            {busy ? "Registrando en Solana…" : "Registrar motocicleta"}
+            {busy ? "Registrando moto en Solana…" : "Registrar moto"}
           </button>
         </div>
       </form>
