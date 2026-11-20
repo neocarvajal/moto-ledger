@@ -62,7 +62,8 @@ vi.mock("sonner", () => ({
   },
 }));
 
-describe("MotoLedger dealership warranty settings", () => {\n  afterEach(() => cleanup());
+describe("MotoLedger dealership warranty settings", () => {
+  afterEach(() => cleanup());
   const onUpdated = vi.fn().mockResolvedValue(undefined);
 
   beforeEach(() => {
@@ -100,7 +101,7 @@ describe("MotoLedger dealership warranty settings", () => {\n  afterEach(() => c
 
   it("rejects warranty durations outside the u16 range", async () => {
     renderSettings();
-    fireEvent.change(screen.getByLabelText("Duración de garantía"), {
+    fireEvent.change(screen.getAllByRole("spinbutton")[0], {
       target: { value: "65536" },
     });
     fireEvent.submit(screen.getByRole("button", { name: "Guardar configuración" }).closest("form")!);
@@ -115,10 +116,10 @@ describe("MotoLedger dealership warranty settings", () => {\n  afterEach(() => c
 
   it("rejects non-integer mileage values", async () => {
     renderSettings();
-    fireEvent.change(screen.getByLabelText("Kilometraje máximo cubierto"), {
+    fireEvent.change(screen.getAllByRole("spinbutton")[1], {
       target: { value: "12.5" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Guardar configuración" }));
+    fireEvent.submit(screen.getByRole("button", { name: "Guardar configuración" }).closest("form")!);
 
     await waitFor(() => {
       expect(mocks.toastError).toHaveBeenCalledWith(
@@ -130,7 +131,7 @@ describe("MotoLedger dealership warranty settings", () => {\n  afterEach(() => c
 
   it("does not send a transaction when the values have not changed", async () => {
     renderSettings();
-    fireEvent.click(screen.getByRole("button", { name: "Guardar configuración" }));
+    fireEvent.submit(screen.getByRole("button", { name: "Guardar configuración" }).closest("form")!);
 
     await waitFor(() => {
       expect(mocks.toastInfo).toHaveBeenCalledWith("No hay cambios para guardar.");
@@ -142,10 +143,10 @@ describe("MotoLedger dealership warranty settings", () => {\n  afterEach(() => c
   it("requires a wallet capable of signing", async () => {
     mocks.connected = null;
     renderSettings();
-    fireEvent.change(screen.getByLabelText("Duración de garantía"), {
+    fireEvent.change(screen.getAllByRole("spinbutton")[0], {
       target: { value: "365" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Guardar configuración" }));
+    fireEvent.submit(screen.getByRole("button", { name: "Guardar configuración" }).closest("form")!);
 
     await waitFor(() => {
       expect(mocks.toastError).toHaveBeenCalledWith(
@@ -160,10 +161,10 @@ describe("MotoLedger dealership warranty settings", () => {\n  afterEach(() => c
       data: { ...mocks.data, owner: "11111111111111111111111111111111" },
     });
     renderSettings();
-    fireEvent.change(screen.getByLabelText("Duración de garantía"), {
+    fireEvent.change(screen.getAllByRole("spinbutton")[0], {
       target: { value: "365" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Guardar configuración" }));
+    fireEvent.submit(screen.getByRole("button", { name: "Guardar configuración" }).closest("form")!);
 
     await waitFor(() => {
       expect(mocks.toastError).toHaveBeenCalledWith(
@@ -175,13 +176,13 @@ describe("MotoLedger dealership warranty settings", () => {\n  afterEach(() => c
 
   it("updates the on-chain warranty policy and refreshes dealership data", async () => {
     renderSettings();
-    fireEvent.change(screen.getByLabelText("Duración de garantía"), {
+    fireEvent.change(screen.getAllByRole("spinbutton")[0], {
       target: { value: "365" },
     });
-    fireEvent.change(screen.getByLabelText("Kilometraje máximo cubierto"), {
+    fireEvent.change(screen.getAllByRole("spinbutton")[1], {
       target: { value: "12000" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Guardar configuración" }));
+    fireEvent.submit(screen.getByRole("button", { name: "Guardar configuración" }).closest("form")!);
 
     await waitFor(() => {
       expect(mocks.notifySuccess).toHaveBeenCalledWith(
