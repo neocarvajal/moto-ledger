@@ -60,7 +60,7 @@ export function MotorcycleRegistration({
       });
       const result = await instruction.sendTransaction();
       notifyTransactionSuccess(
-        "Motocicleta y garantía creadas en una sola transacción.",
+        "Moto y garantía creadas en una sola transacción.",
         result.context.signature
       );
       await onRegistered();
@@ -74,7 +74,7 @@ export function MotorcycleRegistration({
       toast.error(
         error instanceof Error
           ? error.message
-          : "No se pudo registrar la motocicleta."
+          : "No se pudo registrar la moto."
       );
     } finally {
       setBusy(false);
@@ -86,7 +86,7 @@ export function MotorcycleRegistration({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-[9px] font-bold tracking-[0.16em] text-[#e60012]">INVENTARIO</p>
-          <h2 className="mt-2 text-[15px] font-bold text-[#252a30]">Registrar motocicleta</h2>
+          <h2 className="mt-2 text-[15px] font-bold text-[#252a30]">Registrar moto</h2>
           <p className="mt-1 text-[10px] text-[#858d96]">Cada unidad tendrá una cuenta propia y su garantía asociada.</p>
         </div>
         <span className="rounded-md bg-[#f4f5f6] px-2 py-1 text-[9px] font-bold text-[#737b84]">N.I.V. + PDA</span>
