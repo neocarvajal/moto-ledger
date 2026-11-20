@@ -26,10 +26,12 @@ export function MotorcycleCatalog({
   concesionario,
   nombreConcesionario,
   onDeleted,
+  refreshKey,
 }: {
   concesionario: string;
   nombreConcesionario: string;
   onDeleted: () => Promise<void>;
+  refreshKey: number;
 }) {
   const client = useAppClient();
   const connected = useConnectedWallet(client);
@@ -83,7 +85,7 @@ export function MotorcycleCatalog({
 
   useEffect(() => {
     void loadMotorcycles();
-  }, [loadMotorcycles]);
+  }, [loadMotorcycles, refreshKey]);
 
   const handleDelete = async (motorcycle: MotorcycleRecord) => {
     if (!connected?.signer) {
