@@ -5,6 +5,7 @@ import { address } from "@solana/kit";
 import { useConnectedWallet } from "@solana/kit-plugin-wallet/react";
 import { toast } from "sonner";
 import { useAppClient } from "../../lib/client-provider";
+import { notifyTransactionSuccess } from "../../lib/transaction-toast";
 import {
   deriveGarantiaPda,
   deriveMotoPda,
@@ -57,9 +58,12 @@ export function MotorcycleRegistration({
         modelo: modelo.trim(),
         color: color.trim(),
       });
-      await instruction.sendTransaction();
+      const result = await instruction.sendTransaction();
+      notifyTransactionSuccess(
+        "Motocicleta y garantía creadas en una sola transacción.",
+        result.context.signature
+      );
       await onRegistered();
-      toast.success("Motocicleta y garantía creadas en una sola transacción.");
       setSerial("");
       setPlaca("");
       setMarca("");
