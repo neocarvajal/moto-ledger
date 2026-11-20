@@ -31,7 +31,7 @@ export function DealershipWorkspace() {
     if (!connected) throw new Error("Conecta tu wallet para consultar el concesionario.");
     const [dealerPda] = await deriveConcesionarioPda(
       dealerName.trim(),
-      connected.account.address
+      address(connected.account.address)
     );
     const account = await client.registro.accounts.concesionario.fetch(dealerPda);
     setDealership({ address: dealerPda, data: account.data });
@@ -71,10 +71,10 @@ export function DealershipWorkspace() {
       const [registroGlobal] = await deriveRegistroGlobalPda();
       const [concesionario] = await deriveConcesionarioPda(
         name.trim(),
-        connected.account.address
+        address(connected.account.address)
       );
       const existing = await client.registro.accounts.concesionario
-        .fetch(concesionario)
+        .fetch(address(concesionario))
         .catch(() => null);
 
       if (existing) {
