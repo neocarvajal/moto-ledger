@@ -132,8 +132,15 @@ export function MotorcycleCatalog({
         "Motocicleta y garantía eliminadas del catálogo.",
         result.context.signature
       );
-      await loadMotorcycles();
-      await onDeleted();
+
+      // Retira la unidad de la vista inmediatamente después de confirmar la transacción.
+      setMotorcycles((current) =>
+        current.filter((item) => item.address !== motorcycle.address)
+      );
+      setMotorcycleToDelete(null);
+
+      // Sincroniza el catálogo y los contadores con el estado actualizado en Solana.
+      await Promise.all([loadMotorcycles(), onDeleted()]);
     } catch (error) {
       console.error(error);
       toast.error(
