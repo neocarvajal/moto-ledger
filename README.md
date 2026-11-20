@@ -1,79 +1,126 @@
-# moto-ledger
+# MotoLedger
 
-Next.js starter built on `@solana/kit` v8, Kit plugins, and [`@solana/react`](https://www.npmjs.com/package/@solana/react). Connect a browser wallet, switch networks, and send real transactions — SOL transfers, SPL token actions, and memos.
+**Gestión de concesionarios y trazabilidad de motocicletas sobre Solana.**
 
-## Getting Started
+MotoLedger es una dApp que permite a un concesionario administrar su operación desde un dashboard web y registrar información clave directamente en la blockchain. Cada concesionario, motocicleta, cliente, venta y servicio se representa mediante cuentas on-chain y direcciones determinísticas (PDA), lo que facilita consultar y verificar el historial de las operaciones.
 
-Requires Node.js 24 or newer.
+> **Red actual:** Solana Devnet  
+> **Programa:** `64dHKqRTBciEidqLJqCvTWEGWkR1QqyYDZgomMt9AWCj`  
+> **Aplicación:** [moto-ledger-eta.vercel.app](https://moto-ledger-eta.vercel.app/)
 
-```shell
-npx -y create-solana-dapp@latest -t solana-foundation/templates/kit/moto-ledger
+## Funcionalidades
+
+### Concesionarios
+- Conectar una wallet compatible con Solana.
+- Detectar automáticamente los concesionarios asociados a la wallet.
+- Registrar y seleccionar varios concesionarios.
+- Consultar sus datos, propietario, PDA y métricas on-chain.
+
+### Inventario de motocicletas
+- Registrar motocicletas con serial N.I.V., placa, marca, modelo y color.
+- Crear la cuenta de la motocicleta y su cuenta de garantía asociada en la misma operación.
+- Consultar el catálogo del concesionario.
+- Eliminar motocicletas cuando cumplen las condiciones definidas por el programa.
+- Actualizar el catálogo después de registrar o eliminar una motocicleta.
+
+### Clientes y ventas
+- Registrar clientes asociados a la wallet.
+- Registrar ventas vinculando concesionario, cliente y motocicleta.
+- Consultar el historial de ventas y abrir el detalle de cada operación.
+
+### Posventa y servicios
+- Registrar mantenimientos y reparaciones, incluso para motocicletas vendidas.
+- Consultar el historial y el detalle de los servicios.
+- Validar las condiciones de garantía cuando se registra un servicio de tipo garantía.
+
+### Configuración y trazabilidad
+- Consultar la identidad on-chain del concesionario.
+- Configurar la duración y el kilometraje máximo de la cobertura para futuras motocicletas.
+- Abrir las cuentas y transacciones en Solana Explorer.
+- Recibir notificaciones persistentes con el enlace de la transacción confirmada.
+
+**Nota sobre garantías:** la configuración de cobertura se aplica a las nuevas garantías creadas al registrar motocicletas; no modifica retroactivamente las cuentas existentes. El acceso al módulo de garantías permanece desactivado en la navegación mientras se completa esa funcionalidad.
+
+## Arquitectura y tecnologías
+
+| Capa | Tecnologías |
+| --- | --- |
+| Frontend | Next.js 16, React 19, TypeScript |
+| Estilos | Tailwind CSS v4 |
+| Blockchain | Solana |
+| Cliente Solana | `@solana/kit` v8 |
+| Wallet | `@solana/kit-plugin-wallet`, `@solana/react` |
+| RPC | `@solana/kit-plugin-rpc` |
+| Cliente del programa | Codama, `@solana/program-client-core` |
+| Notificaciones | Sonner |
+
+La interfaz utiliza **Solana Kit y el cliente generado con Codama** para consultar cuentas, derivar PDAs, construir instrucciones y enviar transacciones firmadas por la wallet conectada. El frontend consume un programa ya desplegado; este repositorio no requiere un workspace local de Anchor para ejecutar la aplicación.
+
+## Modelo on-chain
+
+Las principales cuentas utilizadas por el programa son:
+
+- **RegistroGlobal:** registro global del sistema.
+- **Concesionario:** propietario, identidad comercial, contadores y política de garantía.
+- **Moto:** datos de identificación de la motocicleta y contadores de posventa.
+- **Garantía:** cobertura asociada a la motocicleta.
+- **Cliente:** identidad del cliente y contador de motocicletas.
+- **Venta:** relación entre concesionario, cliente y motocicleta, con fecha y precio.
+- **Servicio:** historial de mantenimiento, reparación o servicio de garantía.
+- **Reclamación:** estructura prevista para el flujo de reclamaciones de garantía.
+
+Las cuentas se derivan mediante **Program Derived Addresses (PDA)**, utilizando semillas determinísticas definidas por el programa. La aplicación muestra direcciones relevantes y enlaces al explorador de Solana para facilitar la verificación.
+
+## Requisitos
+
+- Node.js **24 o superior**.
+- npm.
+- Una wallet compatible con Solana, por ejemplo Phantom o Solflare.
+- SOL de Devnet para cubrir las comisiones de las transacciones.
+
+## Ejecución local
+
+Clona el repositorio e instala las dependencias:
+
+```bash
+git clone https://github.com/neocarvajal/moto-ledger.git
+cd moto-ledger
+npm install
 ```
 
-```shell
-npm install
+Inicia el servidor de desarrollo:
+
+```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000), connect a wallet, and (on devnet) click **Airdrop 1 SOL** to fund it. Then try the actions. Need devnet SOL another way? [faucet.solana.com](https://faucet.solana.com/).
+Abre [http://localhost:3000](http://localhost:3000), conecta tu wallet y selecciona la red Devnet desde el selector de cluster de la aplicación.
 
-To use localnet, start a local validator in another terminal before selecting
-**localnet**:
+Puedes obtener SOL de prueba desde el [faucet oficial de Solana](https://faucet.solana.com/).
 
-```shell
-solana-test-validator
+## Scripts
+
+```bash
+npm run dev          # Servidor local
+npm run build        # Compilación de producción
+npm run start        # Servidor de producción
+npm run typecheck    # Verificación de TypeScript
+npm run lint         # ESLint
+npm run format       # Formatear con Prettier
+npm run format:check # Comprobar formato
+npm run test         # Ejecutar pruebas
+npm run ci           # Ejecutar build, typecheck, lint, formato y tests
 ```
 
-## What's Included
+## Alcance actual
 
-- **Wallet connection** via the Kit wallet plugin (wallet-standard discovery, auto-reconnect)
-- **Network switcher** — devnet, testnet, mainnet, localnet
-- **Transfer SOL** with the [`@solana-program/system`](https://www.npmjs.com/package/@solana-program/system) kit plugin
-- **Token actions** — create a mint, mint tokens, and transfer them with the [`@solana-program/token`](https://www.npmjs.com/package/@solana-program/token) kit plugin (associated token accounts created for you)
-- **Add memo** with the [`@solana-program/memo`](https://www.npmjs.com/package/@solana-program/memo) kit plugin
-- **Live balance** and **toast notifications** with explorer links
-- **Tailwind CSS v4** with light/dark mode
+MotoLedger se encuentra en desarrollo sobre Devnet. El dashboard integra la gestión de concesionarios, inventario, clientes, ventas, servicios y configuración de garantía. El módulo de reclamaciones y la gestión completa del ciclo de garantías están pendientes de implementación.
 
-## How it works
+Las operaciones que modifican el estado se envían al programa desplegado y requieren firma de la wallet conectada. La disponibilidad de las funciones depende de las instrucciones implementadas por el programa on-chain.
 
-The app builds a Kit client in [`app/lib/solana-client.ts`](app/lib/solana-client.ts). The Kit wallet plugin supplies the connected wallet's transaction signer:
+## Autor
 
-```ts
-createClient()
-  .use(walletSigner({ chain }))
-  .use(solanaRpc({ rpcUrl, rpcSubscriptionsUrl, transactionConfig }))
-  .use(rpcAirdrop()) // client.airdrop (non-mainnet)
-  .use(systemProgram()) // client.system.instructions.transferSol
-  .use(tokenProgram()) // client.token.instructions.{createMint,mintToATA,transferToATA}
-  .use(memoProgram()); // client.memo.instructions.addMemo
-```
+Desarrollado por **[Erick Carvajal](https://github.com/neocarvajal)**.
 
-Components use `useAppClient()` and the Kit wallet hooks from the local provider. Sending uses `client.sendTransaction([instruction])` or the program plugin's instruction-plan helpers.
-
-The Kit 8 RPC planner is configured to emit Version 1 transactions. This
-requires `@solana/kit-plugin-rpc` 0.19 or newer and a wallet that advertises
-Version 1 signing support. Version 1 transactions use a total priority fee in
-lamports and keep resource-limit estimation enabled through the RPC planner.
-
-### Switching networks
-
-A kit client is bound to one chain and RPC endpoint. The cluster dropdown rebuilds the client for that cluster. See [`app/lib/client-provider.tsx`](app/lib/client-provider.tsx).
-
-## Testing
-
-```shell
-npm run test
-```
-
-The tests in [`tests/`](tests/) drive the real UI — click **Connect Wallet**, pick a wallet, fill in the transfer form, press **Send SOL** — and assert on-chain state before and after each click. Three pieces make that work without a browser or a wallet extension:
-
-- **[`@solana/surfpool` 1.7.0](https://www.npmjs.com/package/@solana/surfpool/v/1.7.0)** starts an isolated, in-process local runtime with dynamic RPC and WebSocket ports. It supports V1 transactions and provides funding helpers without a separate validator process.
-- **A mock wallet-standard wallet** ([`tests/mock-wallet.ts`](tests/mock-wallet.ts)) registers itself like any browser extension would, so the app's real wallet discovery, connect flow, and transaction signing run unmodified — signatures come from an in-memory keypair.
-- **[Vitest](https://vitest.dev) + [Testing Library](https://testing-library.com/docs/react-testing-library/intro/)** render the actual app components in jsdom and interact with them by role and label, the same way a user would.
-
-The tests point `AppClientProvider` at Surfpool through its optional URL override and assert that sent transactions have version 1 as well as their expected local-chain effects. Each run starts its own runtime and stops it during teardown. No existing validator, ledger, or devnet funds are used.
-
-Surfpool's native test runtime supports Linux x64 and macOS x64/arm64. On Windows, run the tests in a supported Linux x64 WSL environment with Node.js 24 or newer. No separate Solana CLI installation is required.
-
-The tests use `Surfnet.startWithConfig` with remote account fallback enabled so Surfpool can fetch the deployed Memo program. An internet connection and an available mainnet RPC are required. The default is `https://api.mainnet-beta.solana.com`; set `SOLANA_TEST_REMOTE_RPC_URL` to use another mainnet RPC if needed. Test transactions are sent only to Surfpool's local RPC, never to the upstream network. No Memo binary or license fixture is bundled, and no Solana CLI dump or deployment step is needed.
-# moto-ledger
+- GitHub: [@neocarvajal](https://github.com/neocarvajal)
+- Aplicación: [MotoLedger](https://moto-ledger-eta.vercel.app/)
