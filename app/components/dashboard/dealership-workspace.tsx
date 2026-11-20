@@ -3,9 +3,9 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   address,
-  getAddressEncoder,
   getBase58Decoder,
-  getBase64Decoder,
+  getBase64Encoder,
+  type Base58EncodedBytes,
 } from "@solana/kit";
 import { useConnectedWallet } from "@solana/kit-plugin-wallet/react";
 import { toast } from "sonner";
@@ -50,11 +50,11 @@ export function DealershipWorkspace({ activeModule }: { activeModule: string }) 
 
     setLoadingDealerships(true);
     try {
-      const ownerBytes = getAddressEncoder().encode(address(walletAddress));
-      const ownerFilter = getBase58Decoder().decode(ownerBytes);
+      // RPC memcmp filters require encoded strings, not raw byte arrays.
+      const ownerFilter = address(walletAddress) as Base58EncodedBytes;
       const discriminatorFilter = getBase58Decoder().decode(
         getConcesionarioDiscriminatorBytes()
-      );
+      ) as Base58EncodedBytes;
       const results = await client.rpc
         .getProgramAccounts(REGISTRO_PROGRAM_ADDRESS, {
           encoding: "base64",
@@ -68,7 +68,7 @@ export function DealershipWorkspace({ activeModule }: { activeModule: string }) 
       const found: DealershipRecord[] = results.value.map((result) => ({
         address: result.pubkey,
         data: getConcesionarioDecoder().decode(
-          getBase64Decoder().decode(result.account.data[0])
+          getBase64Encoder().encode(result.account.data[0])
         ),
       }));
 
