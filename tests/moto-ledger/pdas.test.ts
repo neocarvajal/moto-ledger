@@ -9,89 +9,80 @@ import {
   deriveServicioPda,
   deriveVentaPda,
 } from "../../app/lib/moto-ledger/pdas";
+import { REGISTRO_PROGRAM_ADDRESS } from "../../app/lib/moto-ledger/generated/src/generated/programs";
 
+// Fixtures deterministas. Las direcciones esperadas son vectores conocidos
+// calculados independientemente de las funciones derive* que se prueban.
 const owner = address("CCF4CnM99mXSxz2sFffxT4A4CZxpWNsKNPbwueJThGMo");
 const anotherOwner = address("11111111111111111111111111111111");
 const dealership = address("7n7tA4N999UpXc6vfV7odSVek4JydyMEfUZNdGsbsc7o");
-const anotherDealership = address("8WQjh7p1vmnPRVicWVvS5gXxZmibd5YfTfmkGRwufYKS");
 const motorcycle = address("247Qs9cEC8Lyn9z76sHC9EBPCWNtiQULvDkYt2p58mer");
 
 describe("MotoLedger PDA derivation", () => {
-  it("derives the same global registry PDA every time", async () => {
-    const first = await deriveRegistroGlobalPda();
-    const second = await deriveRegistroGlobalPda();
-
-    expect(first).toEqual(second);
-    expect(first[0]).toBeTruthy();
-    expect(first[1]).toBeGreaterThanOrEqual(0);
-    expect(first[1]).toBeLessThanOrEqual(255);
-  });
-
-  describe("dealership", () => {
-    it("derives a deterministic PDA from the dealership name and owner", async () => {
-      const first = await deriveConcesionarioPda("BERA MOTORS", owner);
-      const second = await deriveConcesionarioPda("BERA MOTORS", owner);
-
-      expect(first).toEqual(second);
-    });
-
-    it("derives different PDAs when the name or owner changes", async () => {
-      const original = await deriveConcesionarioPda("BERA MOTORS", owner);
-      const differentName = await deriveConcesionarioPda("MOTOS TORO", owner);
-      const differentOwner = await deriveConcesionarioPda(
-        "BERA MOTORS",
-        anotherOwner
-      );
-
-      expect(differentName[0]).not.toBe(original[0]);
-      expect(differentOwner[0]).not.toBe(original[0]);
-    });
-  });
-
-  it("derives a motorcycle PDA from its serial and dealership", async () => {
-    const first = await deriveMotoPda("BER0DT1500BM00003", dealership);
-    const repeated = await deriveMotoPda("BER0DT1500BM00003", dealership);
-    const anotherDealer = await deriveMotoPda(
-      "BER0DT1500BM00003",
-      anotherDealership
+  it("uses the expected deployed program address", () => {
+    expect(REGISTRO_PROGRAM_ADDRESS).toBe(
+      "64dHKqRTBciEidqLJqCvTWEGWkR1QqyYDZgomMt9AWCj"
     );
-
-    expect(first).toEqual(repeated);
-    expect(anotherDealer[0]).not.toBe(first[0]);
   });
 
-  it("derives a customer PDA from the owner and numeric identity", async () => {
-    const first = await deriveClientePda(owner, 12345678);
-    const repeated = await deriveClientePda(owner, 12345678);
-    const anotherCustomer = await deriveClientePda(owner, 87654321);
-
-    expect(first).toEqual(repeated);
-    expect(anotherCustomer[0]).not.toBe(first[0]);
+  it("derives the global registry PDA from the Rust seed", async () => {
+    await expect(deriveRegistroGlobalPda()).resolves.toEqual([
+      "6bJpY3vCPb8giM8WwhfsiDgKbaY77AASzy4PxScTLhAo",
+      254,
+    ]);
   });
 
-  it("derives a sale PDA from the motorcycle account", async () => {
-    const first = await deriveVentaPda(motorcycle);
-    const repeated = await deriveVentaPda(motorcycle);
-
-    expect(first).toEqual(repeated);
-    expect(first[0]).toBeTruthy();
+  it("derives the dealership PDA from name and owner seeds", async () => {
+    await expect(deriveConcesionarioPda("BERA MOTORS", owner)).resolves.toEqual([
+      "7n7tA4N999UpXc6vfV7odSVek4JydyMEfUZNdGsbsc7o",
+      255,
+    ]);
+    await expect(
+      deriveConcesionarioPda("BERA MOTORS", anotherOwner)
+    ).resolves.not.toEqual([
+      "7n7tA4N999UpXc6vfV7odSVek4JydyMEfUZNdGsbsc7o",
+      255,
+    ]);
   });
 
-  it("derives a warranty PDA from the motorcycle serial", async () => {
-    const first = await deriveGarantiaPda("BER0DT1500BM00003");
-    const repeated = await deriveGarantiaPda("BER0DT1500BM00003");
-    const anotherSerial = await deriveGarantiaPda("BER0SBR200BM00002");
-
-    expect(first).toEqual(repeated);
-    expect(anotherSerial[0]).not.toBe(first[0]);
+  it("derives the motorcycle PDA from the serial and dealership", async () => {
+    await expect(
+      deriveMotoPda("BER0DT1500BM00003", dealership)
+    ).resolves.toEqual([
+      "247Qs9cEC8Lyn9z76sHC9EBPCWNtiQULvDkYt2p58mer",
+      253,
+    ]);
   });
 
-  it("derives a service PDA from the motorcycle and current service counter", async () => {
-    const first = await deriveServicioPda(motorcycle, 0n);
-    const repeated = await deriveServicioPda(motorcycle, 0n);
-    const nextService = await deriveServicioPda(motorcycle, 1n);
+  it("derives the customer PDA using a little-endian u32 identity seed", async () => {
+    await expect(deriveClientePda(owner, 12345678)).resolves.toEqual([
+      "Bkqenztc4YScJr1GNLEnUQxsHZE6pwhfH1ScKZCwiGte",
+      254,
+    ]);
+  });
 
-    expect(first).toEqual(repeated);
-    expect(nextService[0]).not.toBe(first[0]);
+  it("derives the sale PDA from the motorcycle address", async () => {
+    await expect(deriveVentaPda(motorcycle)).resolves.toEqual([
+      "AdfybrUm7UX2ZTkJRo9NQLGWooGywtf9RKEegaMwAWp",
+      252,
+    ]);
+  });
+
+  it("derives the warranty PDA from the serial", async () => {
+    await expect(deriveGarantiaPda("BER0DT1500BM00003")).resolves.toEqual([
+      "ArixyEXxhaePfLFw8XxvsY5wUYPGLZUSKpH4SsZuBKHP",
+      253,
+    ]);
+  });
+
+  it("derives sequential service PDAs using a little-endian u64 counter", async () => {
+    await expect(deriveServicioPda(motorcycle, 0n)).resolves.toEqual([
+      "66VbHcx43C94XVASUtzM6mxy2nwbpPMdwBBLejZ9uNEt",
+      254,
+    ]);
+    await expect(deriveServicioPda(motorcycle, 1n)).resolves.toEqual([
+      "LU16b9JNWweojQfLUmNEJNrYvFY8tVnMYRscG1SZxJs",
+      255,
+    ]);
   });
 });
