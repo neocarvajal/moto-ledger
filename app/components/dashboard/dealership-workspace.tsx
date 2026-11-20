@@ -268,7 +268,7 @@ export function DealershipWorkspace({ activeModule }: { activeModule: string }) 
         )}
       </section>
 
-      {dealership && activeModule === "overview" && (
+      {dealership && (activeModule === "overview" || activeModule === "motorcycles") && (
         <div className="xl:col-span-2">
           <MotorcycleRegistration
             concesionario={dealership.address}
