@@ -240,7 +240,7 @@ export function DealershipWorkspace({ activeModule }: { activeModule: string }) 
               <p className="text-[9px] font-bold tracking-[0.12em] text-[#9299a1]">CONCESIONARIO SELECCIONADO</p>
               <p className="mt-2 text-[15px] font-bold text-[#252a30]">{dealership.data.nombreConcesionario}</p>
               <p className="mt-1 text-[10px] text-[#858d96]">{dealership.data.rifConcesionario}</p>
-              <p className="mt-3 break-all font-mono text-[9px] text-[#9299a1]">{dealership.address}</p>
+              <a href={`https://explorer.solana.com/address/${dealership.address}?cluster=devnet`} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex break-all font-mono text-[9px] text-[#68717b] underline decoration-dotted underline-offset-2 transition hover:text-[#e60012]">{dealership.address}<span className="ml-1 shrink-0">↗</span></a>
             </div>
             <div className="mt-4 grid grid-cols-2 gap-3">
               <div className="rounded-lg border border-[#eff0f2] p-3"><p className="text-[9px] text-[#9299a1]">Garantía (días)</p><p className="mt-1 text-[18px] font-bold text-[#252a30]">{dealership.data.duracionGarantiaDias}</p></div>
