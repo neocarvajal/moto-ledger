@@ -22,6 +22,7 @@ import {
 } from "../../lib/moto-ledger/generated/src/generated/accounts/concesionario";
 import { REGISTRO_PROGRAM_ADDRESS } from "../../lib/moto-ledger/generated/src/generated/programs";
 import { MotorcycleRegistration } from "./motorcycle-registration";
+import { MotorcycleCatalog } from "./motorcycle-catalog";
 import { CustomerManagement } from "./customer-management";
 import { SalesManagement } from "./sales-management";
 import { ServicesManagement } from "./services-management";
@@ -274,6 +275,16 @@ export function DealershipWorkspace({ activeModule }: { activeModule: string }) 
               setDealership({ address: dealership.address, data: refreshed.data });
             }}
           />
+          <div className="mt-4">
+            <MotorcycleCatalog
+              concesionario={dealership.address}
+              nombreConcesionario={dealership.data.nombreConcesionario}
+              onDeleted={async () => {
+                const refreshed = await client.registro.accounts.concesionario.fetch(address(dealership.address));
+                setDealership({ address: dealership.address, data: refreshed.data });
+              }}
+            />
+          </div>
         </div>
       )}
       {dealership && activeModule === "customers" && (
