@@ -86,7 +86,7 @@ function Sidebar({
           <div key={group}>
             <p className="mb-2 px-3 text-[9px] font-bold tracking-[0.18em] text-[#a0a6ad]">{group}</p>
             <div className="space-y-1">
-              {navigation.filter((item) => item.group === group || (!item.group && group === "GESTIÓN" && ["customers", "sales", "services"].includes(item.id))).map((item) => {
+              {navigation.filter((item) => ("group" in item && item.group === group) || (!("group" in item) && group === "GESTIÓN" && ["customers", "sales", "services"].includes(item.id))).map((item) => {
                 const selected = active === item.id;
                 return (
                   <button
