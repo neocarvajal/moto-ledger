@@ -7,7 +7,7 @@ import { DealershipWorkspace } from "./dealership-workspace";
 
 const navigation = [
   { id: "overview", label: "Resumen", icon: "◫", group: "GESTIÓN" },
-  { id: "motorcycles", label: "Motocicletas", icon: "⌁" },
+  { id: "motorcycles", label: "Motos", icon: "⌁" },
   { id: "customers", label: "Clientes", icon: "♙" },
   { id: "sales", label: "Ventas", icon: "↗" },
   { id: "services", label: "Servicios", icon: "⚙" },
@@ -22,7 +22,7 @@ const pageCopy: Record<string, { title: string; description: string }> = {
     description: "Una vista de la operación de tu concesionario.",
   },
   motorcycles: {
-    title: "Motocicletas",
+    title: "Motos",
     description: "Inventario, datos técnicos y estado de cada unidad.",
   },
   customers: {
@@ -194,7 +194,7 @@ export function DashboardShell() {
         <main className="mx-auto max-w-[1440px] px-5 py-7 sm:px-8 sm:py-9">
           <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
             <div>
-              <p className="text-[10px] font-bold tracking-[0.16em] text-[#e60012]">MOTOLEDGER / {active.toUpperCase()}</p>
+              <p className="text-[10px] font-bold tracking-[0.16em] text-[#e60012]">MOTOLEDGER / {active === "motorcycles" ? "MOTOS" : active.toUpperCase()}</p>
               <h1 className="mt-2 text-[25px] font-bold tracking-[-0.045em] text-[#20252b] sm:text-[29px]">{page.title}</h1>
               <p className="mt-1.5 text-[11px] text-[#858d96]">{page.description}</p>
             </div>
@@ -204,8 +204,8 @@ export function DashboardShell() {
             </div>
           </div>
 
-          <div className={active === "overview" || active === "customers" || active === "sales" || active === "services" || active === "settings" ? "" : "hidden"}><DealershipWorkspace activeModule={active} /></div>
-          {active !== "overview" && active !== "customers" && active !== "sales" && active !== "services" && active !== "settings" && <EmptySection title={page.title} />}
+          <div className={active === "overview" || active === "motorcycles" || active === "customers" || active === "sales" || active === "services" || active === "settings" ? "" : "hidden"}><DealershipWorkspace activeModule={active} /></div>
+          {active !== "overview" && active !== "motorcycles" && active !== "customers" && active !== "sales" && active !== "services" && active !== "settings" && <EmptySection title={page.title} />}
 
           <footer className="mt-8 flex flex-wrap items-center justify-between gap-2 border-t border-[#e9ebee] pt-4 text-[9px] text-[#a0a6ad]">
             <span>MOTOLEDGER · GESTIÓN DE CONCESIONARIOS</span>
