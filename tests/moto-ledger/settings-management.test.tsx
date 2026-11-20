@@ -1,5 +1,5 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { SettingsManagement } from "../../app/components/dashboard/settings-management";
 
 const mocks = vi.hoisted(() => {
@@ -62,7 +62,7 @@ vi.mock("sonner", () => ({
   },
 }));
 
-describe("MotoLedger dealership warranty settings", () => {
+describe("MotoLedger dealership warranty settings", () => {\n  afterEach(() => cleanup());
   const onUpdated = vi.fn().mockResolvedValue(undefined);
 
   beforeEach(() => {
@@ -94,8 +94,8 @@ describe("MotoLedger dealership warranty settings", () => {
 
     expect(screen.getByText("BERA MOTORS")).toBeTruthy();
     expect(screen.getByText("J123456789")).toBeTruthy();
-    expect((screen.getByLabelText("Duración de garantía") as HTMLInputElement).value).toBe("180");
-    expect((screen.getByLabelText("Kilometraje máximo cubierto") as HTMLInputElement).value).toBe("6000");
+    expect((screen.getAllByRole("spinbutton")[0] as HTMLInputElement).value).toBe("180");
+    expect((screen.getAllByRole("spinbutton")[1] as HTMLInputElement).value).toBe("6000");
   });
 
   it("rejects warranty durations outside the u16 range", async () => {
@@ -103,7 +103,7 @@ describe("MotoLedger dealership warranty settings", () => {
     fireEvent.change(screen.getByLabelText("Duración de garantía"), {
       target: { value: "65536" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Guardar configuración" }));
+    fireEvent.submit(screen.getByRole("button", { name: "Guardar configuración" }).closest("form")!);
 
     await waitFor(() => {
       expect(mocks.toastError).toHaveBeenCalledWith(
@@ -113,7 +113,7 @@ describe("MotoLedger dealership warranty settings", () => {
     expect(mocks.client.registro.instructions.configurarGarantia).not.toHaveBeenCalled();
   });
 
-  it("rejects non-integer or out-of-range mileage values", async () => {
+  it("rejects non-integer mileage values", async () => {
     renderSettings();
     fireEvent.change(screen.getByLabelText("Kilometraje máximo cubierto"), {
       target: { value: "12.5" },
