@@ -36,6 +36,7 @@ export function MotorcycleCatalog({
   const [motorcycles, setMotorcycles] = useState<MotorcycleRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [motorcycleToDelete, setMotorcycleToDelete] = useState<MotorcycleRecord | null>(null);
 
   const loadMotorcycles = useCallback(async () => {
     setLoading(true);
@@ -98,11 +99,6 @@ export function MotorcycleCatalog({
       toast.error("Esta motocicleta tiene un historial que debe conservarse.");
       return;
     }
-
-    const confirmed = window.confirm(
-      `¿Eliminar esta motocicleta del catálogo?\n\n${motorcycle.data.marca} ${motorcycle.data.modelo}\nSerial: ${motorcycle.data.serial}\nPlaca: ${motorcycle.data.placa}\n\nSe cerrarán las cuentas de la moto y su garantía. Esta acción no se puede deshacer.`
-    );
-    if (!confirmed) return;
 
     setDeleting(motorcycle.address);
     try {
@@ -237,7 +233,7 @@ export function MotorcycleCatalog({
                 </div>
                 <button
                   type="button"
-                  onClick={() => void handleDelete(motorcycle)}
+                  onClick={() => setMotorcycleToDelete(motorcycle)}
                   disabled={!canDelete || deleting !== null}
                   className="shrink-0 rounded-lg border border-[#f0c8cc] px-3 py-2 text-[10px] font-semibold text-[#d90011] transition hover:bg-[#fff0f1] disabled:cursor-not-allowed disabled:border-[#e9ebee] disabled:text-[#b0b5bb] disabled:hover:bg-white"
                 >
@@ -255,5 +251,50 @@ export function MotorcycleCatalog({
         Las motos vendidas o con servicios/reclamaciones no se pueden eliminar. El programa también valida estas condiciones on-chain y devuelve al owner los fondos de renta de las cuentas cerradas.
       </p>
     </section>
+
+      {motorcycleToDelete && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-[#171b20]/55 p-4 backdrop-blur-[2px]"
+          onClick={() => deleting === null && setMotorcycleToDelete(null)}
+        >
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-motorcycle-title"
+            onClick={(event) => event.stopPropagation()}
+            className="my-auto w-full max-w-md overflow-hidden rounded-2xl border border-[#e9ebee] bg-white shadow-2xl"
+          >
+            <div className="flex items-start justify-between border-b border-[#eff0f2] px-6 py-5">
+              <div>
+                <p className="text-[9px] font-bold tracking-[0.16em] text-[#e60012]">GESTIÓN DE INVENTARIO</p>
+                <h2 id="delete-motorcycle-title" className="mt-1 text-[17px] font-bold text-[#252a30]">Eliminar motocicleta</h2>
+                <p className="mt-1 text-[10px] text-[#858d96]">Confirma que deseas retirar esta unidad del catálogo.</p>
+              </div>
+              <button type="button" onClick={() => setMotorcycleToDelete(null)} disabled={deleting !== null} aria-label="Cerrar confirmación" className="rounded-lg border border-[#e2e5e8] px-3 py-1.5 text-[12px] text-[#68717b] hover:bg-[#f7f8fa] disabled:opacity-40">✕</button>
+            </div>
+            <div className="space-y-4 p-6">
+              <div className="rounded-xl border border-[#f2d5d7] bg-[#fff8f8] p-4">
+                <div className="flex items-start gap-3">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#fdebed] text-[17px] text-[#d90011]">!</span>
+                  <div className="min-w-0">
+                    <p className="text-[12px] font-bold text-[#30363d]">{motorcycleToDelete.data.marca} {motorcycleToDelete.data.modelo}</p>
+                    <p className="mt-1 font-mono text-[10px] text-[#68717b]">{motorcycleToDelete.data.serial}</p>
+                    <p className="mt-0.5 text-[10px] text-[#858d96]">Placa: <strong className="text-[#424950]">{motorcycleToDelete.data.placa}</strong><span className="mx-2">·</span>Color: <strong className="text-[#424950]">{motorcycleToDelete.data.color}</strong></p>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-2 text-[10px] leading-relaxed text-[#68717b]">
+                <p>Se cerrarán las cuentas on-chain de la motocicleta y su garantía.</p>
+                <p className="font-semibold text-[#a33d45]">Esta operación no se puede deshacer. Los fondos recuperables de las cuentas cerradas se devolverán al propietario.</p>
+              </div>
+              <div className="flex flex-col-reverse gap-2 border-t border-[#eff0f2] pt-4 sm:flex-row sm:justify-end">
+                <button type="button" onClick={() => setMotorcycleToDelete(null)} disabled={deleting !== null} className="rounded-lg border border-[#e2e5e8] px-4 py-2.5 text-[10px] font-semibold text-[#555e68] transition hover:bg-[#f7f8fa] disabled:opacity-50">Cancelar</button>
+                <button type="button" onClick={() => { const selected = motorcycleToDelete; setMotorcycleToDelete(null); if (selected) void handleDelete(selected); }} disabled={deleting !== null} className="rounded-lg bg-[#e60012] px-4 py-2.5 text-[10px] font-semibold text-white transition hover:bg-[#c90010] disabled:cursor-not-allowed disabled:opacity-50">{deleting ? "Eliminando…" : "Sí, eliminar moto"}</button>
+              </div>
+            </div>
+          </section>
+        </div>
+      )}
+
   );
 }
