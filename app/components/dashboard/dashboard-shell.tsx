@@ -199,7 +199,8 @@ export function DashboardShell() {
             </div>
           </div>
 
-          {active === "overview" ? <DealershipWorkspace /> : <EmptySection title={page.title} />}
+          <div className={active === "overview" || active === "customers" ? "" : "hidden"}><DealershipWorkspace activeModule={active} /></div>
+          {active !== "overview" && active !== "customers" && <EmptySection title={page.title} />}
 
           <footer className="mt-8 flex flex-wrap items-center justify-between gap-2 border-t border-[#e9ebee] pt-4 text-[9px] text-[#a0a6ad]">
             <span>MOTOLEDGER · GESTIÓN DE CONCESIONARIOS</span>
