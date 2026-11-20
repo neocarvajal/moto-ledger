@@ -65,7 +65,7 @@ export function DealershipWorkspace({ activeModule }: { activeModule: string }) 
         })
         .send();
 
-      const found: DealershipRecord[] = results.value.map((result) => ({
+      const found: DealershipRecord[] = results.map((result) => ({
         address: result.pubkey,
         data: getConcesionarioDecoder().decode(
           getBase64Encoder().encode(result.account.data[0])
