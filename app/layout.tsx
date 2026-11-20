@@ -1,9 +1,8 @@
+
 import type { Metadata } from "next";
 import { Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./components/providers";
-import { AppHeader } from "./components/app-header";
-import { GridBackground } from "./components/grid-background";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -17,9 +16,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Solana Kit Starter",
+  title: {
+    default: "MotoLedger",
+    template: "%s | MotoLedger",
+  },
   description:
-    "Wallet connection and on-chain actions with @solana/kit, the kit plugin client, and @solana/react",
+    "Plataforma de gestión de concesionarios, motocicletas, ventas, servicios y garantías sobre Solana.",
   icons: {
     icon: "/icon.svg",
     shortcut: "/icon.svg",
@@ -33,17 +35,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="es" suppressHydrationWarning>
       <body className={`${inter.variable} ${geistMono.variable} antialiased`}>
-        <Providers>
-          <div className="relative min-h-screen bg-background text-foreground">
-            <GridBackground />
-            <div className="relative z-10">
-              <AppHeader />
-              {children}
-            </div>
-          </div>
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
