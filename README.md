@@ -117,10 +117,3 @@ npm run ci           # Ejecutar build, typecheck, lint, formato y tests
 MotoLedger se encuentra en desarrollo sobre Devnet. El dashboard integra la gestión de concesionarios, inventario, clientes, ventas, servicios y configuración de garantía. El módulo de reclamaciones y la gestión completa del ciclo de garantías están pendientes de implementación.
 
 Las operaciones que modifican el estado se envían al programa desplegado y requieren firma de la wallet conectada. La disponibilidad de las funciones depende de las instrucciones implementadas por el programa on-chain.
-
-## Autor
-
-Desarrollado por **[Erick Carvajal](https://github.com/neocarvajal)**.
-
-- GitHub: [@neocarvajal](https://github.com/neocarvajal)
-- Aplicación: [MotoLedger](https://moto-ledger-eta.vercel.app/)
