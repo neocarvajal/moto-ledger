@@ -10,7 +10,7 @@ import type { Cliente } from "../../lib/moto-ledger/generated/src/generated/acco
 
 function parseCedula(value: string) {
   const parsed = Number(value.trim());
-  if (!/^\\d+$/.test(value.trim()) || !Number.isSafeInteger(parsed) || parsed <= 0 || parsed > 4294967295) {
+  if (!/^[0-9]+$/.test(value.trim()) || !Number.isSafeInteger(parsed) || parsed <= 0 || parsed > 4294967295) {
     throw new Error("Introduce una cédula válida.");
   }
   return parsed;
