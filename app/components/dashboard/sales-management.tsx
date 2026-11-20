@@ -325,7 +325,7 @@ export function SalesManagement({
         </div>
         {sales.length > 0 ? (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[650px] text-left">
+            <table className="w-full min-w-[780px] text-left">
               <thead className="bg-[#fafbfc] text-[9px] font-bold uppercase tracking-wide text-[#9299a1]">
                 <tr><th className="px-6 py-3">Fecha</th><th className="px-4 py-3">Cliente PDA</th><th className="px-4 py-3">Motocicleta PDA</th><th className="px-4 py-3 text-right">Precio</th><th className="px-6 py-3 text-right">Venta PDA</th><th className="px-4 py-3 text-right">Detalle</th></tr>
               </thead>
