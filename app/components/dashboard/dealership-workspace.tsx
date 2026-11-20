@@ -44,6 +44,7 @@ export function DealershipWorkspace({ activeModule }: { activeModule: string }) 
   const [showCreate, setShowCreate] = useState(false);
   const [loadingDealerships, setLoadingDealerships] = useState(false);
   const [busy, setBusy] = useState<"create" | null>(null);
+  const [catalogRefreshKey, setCatalogRefreshKey] = useState(0);
 
   const loadDealerships = useCallback(async () => {
     if (!walletAddress) {
@@ -271,6 +272,7 @@ export function DealershipWorkspace({ activeModule }: { activeModule: string }) 
           <MotorcycleRegistration
             concesionario={dealership.address}
             onRegistered={async () => {
+              setCatalogRefreshKey((current) => current + 1);
               const refreshed = await client.registro.accounts.concesionario.fetch(address(dealership.address));
               setDealership({ address: dealership.address, data: refreshed.data });
             }}
@@ -278,6 +280,7 @@ export function DealershipWorkspace({ activeModule }: { activeModule: string }) 
           <div className="mt-4">
             <MotorcycleCatalog
               concesionario={dealership.address}
+              refreshKey={catalogRefreshKey}
               nombreConcesionario={dealership.data.nombreConcesionario}
               onDeleted={async () => {
                 const refreshed = await client.registro.accounts.concesionario.fetch(address(dealership.address));
