@@ -24,7 +24,9 @@ type RpcResponse<T> = {
 async function getAccountInfo(
   address: string
 ): Promise<{ account: RpcAccountInfo | null; slot: number }> {
-  if (!rpcUrl) throw new Error("MOTO_LEDGER_DEVNET_RPC_URL is not configured");
+  if (!rpcUrl) {
+    throw new Error("MOTO_LEDGER_DEVNET_RPC_URL is not configured");
+  }
 
   const response = await fetch(rpcUrl, {
     method: "POST",
@@ -44,7 +46,9 @@ async function getAccountInfo(
 
   const payload = (await response.json()) as RpcResponse<RpcAccountInfo | null>;
   if (payload.error) {
-    throw new Error(`Devnet RPC ${payload.error.code}: ${payload.error.message}`);
+    throw new Error(
+      `Devnet RPC ${payload.error.code}: ${payload.error.message}`
+    );
   }
 
   return {
@@ -78,7 +82,10 @@ describe.skipIf(!rpcUrl)("MotoLedger Devnet integration (read-only)", () => {
     async () => {
       const { account, slot } = await getAccountInfo(registryAddress);
 
-      expect(account, `Registry PDA ${registryAddress} must exist on Devnet`).not.toBeNull();
+      expect(
+        account,
+        `Registry PDA ${registryAddress} must exist on Devnet`
+      ).not.toBeNull();
       expect(account?.owner).toBe(REGISTRO_PROGRAM_ADDRESS);
       expect(account?.executable).toBe(false);
       expect(slot).toBeGreaterThan(0);
