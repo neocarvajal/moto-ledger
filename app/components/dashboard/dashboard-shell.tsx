@@ -26,7 +26,7 @@ const pageCopy: Record<string, { title: string; description: string }> = {
   },
   sales: {
     title: "Ventas",
-    description: "Registro y seguimiento de las ventas de motocicletas.",
+    description: "Registro y seguimiento de las ventas de motos.",
   },
   services: {
     title: "Servicios",
@@ -109,7 +109,7 @@ function Sidebar({
             <span className="h-2 w-2 rounded-full bg-[#e60012]" />
             <span className="text-[10px] font-bold tracking-wide text-[#555e68]">POWERED BY SOLANA</span>
           </div>
-          <p className="mt-2 text-[10px] leading-relaxed text-[#9299a1]">Registros verificables y trazabilidad para el ciclo de vida de cada motocicleta.</p>
+          <p className="mt-2 text-[10px] leading-relaxed text-[#9299a1]">Registros verificables y trazabilidad para el ciclo de vida de cada moto.</p>
         </div>
         <p className="mt-4 px-1 text-[10px] text-[#a5abb2]">MotoLedger · Versión 1.0</p>
       </div>
