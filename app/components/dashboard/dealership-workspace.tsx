@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { address } from "@solana/kit";
 import { useConnectedWallet } from "@solana/kit-plugin-wallet/react";
 import { toast } from "sonner";
 import { useAppClient } from "../../lib/client-provider";
@@ -9,6 +10,7 @@ import {
   deriveRegistroGlobalPda,
 } from "../../lib/moto-ledger/pdas";
 import type { Concesionario } from "../../lib/moto-ledger/generated/src/generated/accounts";
+import { MotorcycleRegistration } from "./motorcycle-registration";
 
 function shortAddress(value: string) {
   return `${value.slice(0, 5)}…${value.slice(-5)}`;
@@ -215,6 +217,19 @@ export function DealershipWorkspace() {
           </div>
         )}
       </section>
+      {dealership && (
+        <div className="xl:col-span-2">
+          <MotorcycleRegistration
+            concesionario={dealership.address}
+            onRegistered={async () => {
+              const refreshed = await client.registro.accounts.concesionario.fetch(
+                address(dealership.address)
+              );
+              setDealership({ address: dealership.address, data: refreshed.data });
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }
