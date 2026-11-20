@@ -27,6 +27,7 @@ import {
   type Servicio,
 } from "../../lib/moto-ledger/generated/src/generated/accounts/servicio";
 import { TipoServicio } from "../../lib/moto-ledger/generated/src/generated/types/tipoServicio";
+import { EstadoGarantia } from "../../lib/moto-ledger/generated/src/generated/types/estadoGarantia";
 
 type MotorcycleRecord = { address: string; data: Moto };
 type ServiceRecord = { address: string; data: Servicio; motorcycle?: Moto };
@@ -160,8 +161,8 @@ export function ServicesManagement({
       toast.error("La descripción del servicio es obligatoria.");
       return;
     }
-    if (new TextEncoder().encode(normalizedDescription).length > 200) {
-      toast.error("La descripción no puede superar 200 bytes UTF-8.");
+    if (new TextEncoder().encode(normalizedDescription).length > 100) {
+      toast.error("La descripción no puede superar 100 bytes UTF-8.");
       return;
     }
 
@@ -184,7 +185,20 @@ export function ServicesManagement({
       }
 
       const [garantia] = await deriveGarantiaPda(latestMoto.data.serial);
-      await client.registro.accounts.garantia.fetch(garantia);
+      const warrantyAccount = await client.registro.accounts.garantia.fetch(garantia);
+      if (serviceType === TipoServicio.Garantia) {
+        const warranty = warrantyAccount.data;
+        const now = BigInt(Math.floor(Date.now() / 1000));
+        if (warranty.estado !== EstadoGarantia.Activa) {
+          throw new Error("La garantía de esta motocicleta no está activa.");
+        }
+        if (now > warranty.fechaVencimiento) {
+          throw new Error("La garantía de esta motocicleta está vencida.");
+        }
+        if (mileageValue > warranty.kilometrajeMaximo) {
+          throw new Error(`El kilometraje supera el máximo cubierto de ${warranty.kilometrajeMaximo.toString()} km.`);
+        }
+      }
 
       const [servicio] = await deriveServicioPda(motoAddress, latestMoto.data.servicios);
       const instruction = client.registro.instructions.registrarServicio({
@@ -268,8 +282,8 @@ export function ServicesManagement({
           <div className="space-y-4">
             <label className="block">
               <span className="mb-1.5 block text-[10px] font-semibold text-[#555e68]">Descripción del trabajo</span>
-              <textarea value={description} onChange={(event) => setDescription(event.target.value)} maxLength={200} required disabled={busy} rows={5} placeholder="Describe el mantenimiento o reparación realizada…" className="w-full resize-y rounded-lg border border-[#e2e5e8] px-3 py-2.5 text-[11px] leading-relaxed outline-none focus:border-[#e60012]" />
-              <span className="mt-1 block text-right text-[9px] text-[#a0a6ad]">{new TextEncoder().encode(description).length}/200 bytes UTF-8</span>
+              <textarea value={description} onChange={(event) => setDescription(event.target.value)} maxLength={100} required disabled={busy} rows={5} placeholder="Describe el mantenimiento o reparación realizada…" className="w-full resize-y rounded-lg border border-[#e2e5e8] px-3 py-2.5 text-[11px] leading-relaxed outline-none focus:border-[#e60012]" />
+              <span className="mt-1 block text-right text-[9px] text-[#a0a6ad]">{new TextEncoder().encode(description).length}/100 bytes UTF-8</span>
             </label>
             <label className="block">
               <span className="mb-1.5 block text-[10px] font-semibold text-[#555e68]">Costo del servicio</span>
