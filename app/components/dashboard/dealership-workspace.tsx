@@ -59,8 +59,8 @@ export function DealershipWorkspace({ activeModule }: { activeModule: string }) 
         .getProgramAccounts(REGISTRO_PROGRAM_ADDRESS, {
           encoding: "base64",
           filters: [
-            { memcmp: { offset: 0n, bytes: discriminatorFilter } },
-            { memcmp: { offset: 8n, bytes: ownerFilter } },
+            { memcmp: { offset: 0n, bytes: discriminatorFilter, encoding: "base58" } },
+            { memcmp: { offset: 8n, bytes: ownerFilter, encoding: "base58" } },
           ],
         })
         .send();
