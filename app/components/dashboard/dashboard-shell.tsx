@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ClusterSelect } from "../cluster-select";
 import { WalletButton } from "../wallet-button";
+import { DealershipWorkspace } from "./dealership-workspace";
 
 const navigation = [
   { id: "overview", label: "Resumen", icon: "◫", group: "GESTIÓN" },
@@ -139,85 +140,6 @@ function MetricCard({
   );
 }
 
-function Overview() {
-  return (
-    <>
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <MetricCard label="Motocicletas registradas" icon="⌁" note="Unidades en el inventario" />
-        <MetricCard label="Clientes" icon="♙" note="Clientes del concesionario" />
-        <MetricCard label="Ventas realizadas" icon="↗" note="Operaciones registradas" />
-        <MetricCard label="Servicios" icon="⚙" note="Historial de posventa" />
-      </div>
-
-      <div className="mt-5 grid gap-4 xl:grid-cols-[1.45fr_1fr]">
-        <section className="min-h-[300px] rounded-xl border border-[#e9ebee] bg-white p-5 shadow-[0_2px_8px_rgba(24,32,40,0.025)]">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-[13px] font-bold text-[#252a30]">Actividad reciente</h2>
-              <p className="mt-1 text-[10px] text-[#9299a1]">Últimos movimientos del concesionario</p>
-            </div>
-            <span className="rounded-md border border-[#eceef0] px-2 py-1 text-[9px] font-semibold text-[#858d96]">EN CADENA</span>
-          </div>
-          <div className="flex h-[210px] flex-col items-center justify-center text-center">
-            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#f7f8fa] text-xl text-[#a0a6ad]">⌁</div>
-            <p className="mt-3 text-[12px] font-semibold text-[#515962]">Aún no hay actividad</p>
-            <p className="mt-1 max-w-[250px] text-[10px] leading-relaxed text-[#9aa1a9]">Cuando registres motocicletas, ventas o servicios, verás aquí los movimientos.</p>
-          </div>
-        </section>
-
-        <section className="rounded-xl border border-[#e9ebee] bg-white p-5 shadow-[0_2px_8px_rgba(24,32,40,0.025)]">
-          <h2 className="text-[13px] font-bold text-[#252a30]">Estado de garantías</h2>
-          <p className="mt-1 text-[10px] text-[#9299a1]">Resumen de cobertura de tu inventario</p>
-          <div className="mt-7 space-y-5">
-            {[
-              ["Activas", "bg-[#16a36a]"],
-              ["Por vencer", "bg-[#e6a23c]"],
-              ["Vencidas", "bg-[#e60012]"],
-            ].map(([label, color]) => (
-              <div key={label} className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <span className={`h-2 w-2 rounded-full ${color}`} />
-                  <span className="text-[11px] font-medium text-[#68717a]">{label}</span>
-                </div>
-                <span className="text-[12px] font-bold text-[#353b42]">—</span>
-              </div>
-            ))}
-          </div>
-          <div className="mt-7 rounded-lg bg-[#f7f8fa] p-3">
-            <p className="text-[10px] leading-relaxed text-[#858d96]">Los indicadores se mostrarán al conectar tu wallet y cargar los datos del programa.</p>
-          </div>
-        </section>
-      </div>
-
-      <section className="mt-5 rounded-xl border border-[#e9ebee] bg-white p-5 shadow-[0_2px_8px_rgba(24,32,40,0.025)]">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h2 className="text-[13px] font-bold text-[#252a30]">Accesos rápidos</h2>
-            <p className="mt-1 text-[10px] text-[#9299a1]">Acciones principales del concesionario</p>
-          </div>
-          <span className="text-[9px] font-semibold tracking-wide text-[#a0a6ad]">PRÓXIMAMENTE DISPONIBLES</span>
-        </div>
-        <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-          {[
-            ["＋", "Registrar motocicleta", "Añade una unidad al inventario"],
-            ["♙", "Registrar cliente", "Crea una ficha de cliente"],
-            ["↗", "Registrar venta", "Asocia una moto a un cliente"],
-            ["⚙", "Registrar servicio", "Añade un trabajo al historial"],
-          ].map(([icon, title, description]) => (
-            <div key={title} className="flex items-start gap-3 rounded-lg border border-[#eff0f2] p-3 opacity-70">
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#fff0f1] text-[16px] text-[#e60012]">{icon}</span>
-              <div>
-                <p className="text-[10px] font-bold text-[#454c54]">{title}</p>
-                <p className="mt-1 text-[9px] text-[#9299a1]">{description}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-    </>
-  );
-}
-
 function EmptySection({ title }: { title: string }) {
   return (
     <section className="flex min-h-[360px] flex-col items-center justify-center rounded-xl border border-[#e9ebee] bg-white px-6 text-center shadow-[0_2px_8px_rgba(24,32,40,0.025)]">
@@ -277,7 +199,7 @@ export function DashboardShell() {
             </div>
           </div>
 
-          {active === "overview" ? <Overview /> : <EmptySection title={page.title} />}
+          {active === "overview" ? <DealershipWorkspace /> : <EmptySection title={page.title} />}
 
           <footer className="mt-8 flex flex-wrap items-center justify-between gap-2 border-t border-[#e9ebee] pt-4 text-[9px] text-[#a0a6ad]">
             <span>MOTOLEDGER · GESTIÓN DE CONCESIONARIOS</span>
