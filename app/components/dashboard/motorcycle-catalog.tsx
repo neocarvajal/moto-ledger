@@ -11,6 +11,7 @@ import {
 import { useConnectedWallet } from "@solana/kit-plugin-wallet/react";
 import { toast } from "sonner";
 import { useAppClient } from "../../lib/client-provider";
+import { REGISTRO_PROGRAM_ADDRESS } from "../../lib/moto-ledger/generated/src/generated/programs";
 import { notifyTransactionSuccess } from "../../lib/transaction-toast";
 import { deriveGarantiaPda } from "../../lib/moto-ledger/pdas";
 import {
@@ -44,7 +45,7 @@ export function MotorcycleCatalog({
       ) as Base58EncodedBytes;
       const results = await client.rpc
         .getProgramAccounts(
-          "64dHKqRTBciEidqLJqCvTWEGWkR1QqyYDZgomMt9AWCj",
+          REGISTRO_PROGRAM_ADDRESS,
           {
             encoding: "base64",
             filters: [
