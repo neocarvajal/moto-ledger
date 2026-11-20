@@ -59,7 +59,7 @@ export function MotorcycleRegistration({
       });
       await instruction.sendTransaction();
       await onRegistered();
-      toast.success("Motocicleta registrada y garantía creada.");
+      toast.success("Motocicleta y garantía creadas en una sola transacción.");
       setSerial("");
       setPlaca("");
       setMarca("");
