@@ -43,7 +43,7 @@ const systemProgram = address("11111111111111111111111111111111");
 function expectInstruction(
   instruction: {
     programAddress: string;
-    data: Uint8Array;
+    data: ArrayLike<number>;
     accounts: readonly { address: string; role: number }[];
   },
   instructionName: string,
@@ -56,7 +56,7 @@ function expectInstruction(
     .subarray(0, 8);
 
   expect(instruction.programAddress).toBe(REGISTRO_PROGRAM_ADDRESS);
-  expect(Array.from(instruction.data.slice(0, 8))).toEqual(
+  expect(Array.from(instruction.data).slice(0, 8)).toEqual(
     Array.from(expectedDiscriminator)
   );
   expect(instruction.accounts.map((account) => account.address)).toEqual(
