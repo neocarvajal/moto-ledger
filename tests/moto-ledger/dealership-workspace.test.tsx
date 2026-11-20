@@ -121,7 +121,7 @@ function setAccountResults() {
     ]),
   });
   mocks.decode.mockImplementation((bytes: unknown) =>
-    (bytes as string[])[0] === "a" ? mocks.dealershipA : mocks.dealershipB
+    String(bytes).startsWith("a") ? mocks.dealershipA : mocks.dealershipB
   );
 }
 
