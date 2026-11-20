@@ -26,6 +26,7 @@ import { MotorcycleCatalog } from "./motorcycle-catalog";
 import { CustomerManagement } from "./customer-management";
 import { SalesManagement } from "./sales-management";
 import { ServicesManagement } from "./services-management";
+import { SettingsManagement } from "./settings-management";
 
 type DealershipRecord = { address: string; data: Concesionario };
 
@@ -316,7 +317,20 @@ export function DealershipWorkspace({ activeModule }: { activeModule: string }) 
         </div>
       )}
 
-      {dealership && activeModule === "services" && (
+
+      {dealership && activeModule === "settings" && (
+        <div className="xl:col-span-2">
+          <SettingsManagement
+            concesionario={dealership.address}
+            data={dealership.data}
+            onUpdated={async () => {
+              const refreshed = await client.registro.accounts.concesionario.fetch(address(dealership.address));
+              setDealership({ address: dealership.address, data: refreshed.data });
+            }}
+          />
+        </div>
+      )}
+\n      {dealership && activeModule === "services" && (
         <div className="xl:col-span-2">
           <ServicesManagement
             concesionario={dealership.address}
