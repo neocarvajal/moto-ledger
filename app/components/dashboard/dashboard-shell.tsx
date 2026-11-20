@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ClusterSelect } from "../cluster-select";
 import { WalletButton } from "../wallet-button";
 import { DealershipWorkspace } from "./dealership-workspace";
+import { useAppClient } from "../../lib/client-provider";
+import { useCluster } from "../cluster-context";
 
 const navigation = [
   { id: "overview", label: "Resumen", icon: "◫", group: "GESTIÓN" },
@@ -138,6 +140,91 @@ function MetricCard({
   );
 }
 
+type NetworkStatus = "checking" | "connected" | "disconnected";
+
+function NetworkStatusBadge() {
+  const client = useAppClient();
+  const { cluster } = useCluster();
+  const [status, setStatus] = useState<NetworkStatus>("checking");
+  const [slot, setSlot] = useState<string | null>(null);
+  const [latency, setLatency] = useState<number | null>(null);
+  const [lastChecked, setLastChecked] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+
+    const checkNetwork = async () => {
+      const startedAt = performance.now();
+      try {
+        const currentSlot = await client.rpc.getSlot().send();
+        const elapsed = Math.round(performance.now() - startedAt);
+        if (!active) return;
+        setStatus("connected");
+        setSlot(currentSlot.toString());
+        setLatency(elapsed);
+        setLastChecked(new Date().toLocaleTimeString("es-VE"));
+      } catch (error) {
+        if (!active) return;
+        console.warn(`No se pudo consultar la red ${cluster}:`, error);
+        setStatus("disconnected");
+        setLatency(null);
+        setLastChecked(new Date().toLocaleTimeString("es-VE"));
+      }
+    };
+
+    void checkNetwork();
+    const interval = window.setInterval(() => void checkNetwork(), 10_000);
+
+    return () => {
+      active = false;
+      window.clearInterval(interval);
+    };
+  }, [client, cluster]);
+
+  const appearance = {
+    checking: {
+      label: "CONECTANDO A LA RED",
+      dot: "bg-[#e6a23c] animate-pulse",
+      border: "border-[#f3dfbd]",
+      background: "bg-[#fff9ef]",
+      text: "text-[#b7791f]",
+    },
+    connected: {
+      label: "RED CONECTADA",
+      dot: "bg-[#16a36a]",
+      border: "border-[#ccebdc]",
+      background: "bg-[#f1fbf6]",
+      text: "text-[#168354]",
+    },
+    disconnected: {
+      label: "SIN CONEXIÓN",
+      dot: "bg-[#dc4545]",
+      border: "border-[#f2d1d1]",
+      background: "bg-[#fff5f5]",
+      text: "text-[#c43d3d]",
+    },
+  }[status];
+
+  return (
+    <div
+      className={`flex min-w-[190px] flex-col gap-1 rounded-lg border px-3 py-2 ${appearance.border} ${appearance.background}`}
+      role="status"
+      aria-live="polite"
+      title={lastChecked ? `Última comprobación: ${lastChecked}` : "Comprobando conexión RPC"}
+    >
+      <div className="flex items-center gap-2">
+        <span className={`h-2 w-2 shrink-0 rounded-full ${appearance.dot}`} />
+        <span className={`text-[9px] font-bold tracking-wide ${appearance.text}`}>{appearance.label}</span>
+        <span className="ml-auto text-[9px] font-semibold uppercase text-[#858d96]">{cluster}</span>
+      </div>
+      <div className="flex items-center gap-3 pl-4 text-[9px] text-[#7b838c]">
+        <span>{slot ? `Slot #${Number(slot).toLocaleString("es-VE")}` : "Consultando slot…"}</span>
+        {latency !== null && <span>{latency} ms</span>}
+      </div>
+    </div>
+  );
+}
+
 function EmptySection({ title }: { title: string }) {
   return (
     <section className="flex min-h-[360px] flex-col items-center justify-center rounded-xl border border-[#e9ebee] bg-white px-6 text-center shadow-[0_2px_8px_rgba(24,32,40,0.025)]">
@@ -193,10 +280,7 @@ export function DashboardShell() {
               <h1 className="mt-2 text-[25px] font-bold tracking-[-0.045em] text-[#20252b] sm:text-[29px]">{page.title}</h1>
               <p className="mt-1.5 text-[11px] text-[#858d96]">{page.description}</p>
             </div>
-            <div className="flex items-center gap-2 rounded-lg border border-[#e9ebee] bg-white px-3 py-2">
-              <span className="h-2 w-2 rounded-full bg-[#e6a23c]" />
-              <span className="text-[9px] font-semibold text-[#7b838c]">ESPERANDO CONEXIÓN</span>
-            </div>
+            <NetworkStatusBadge />
           </div>
 
           <div className={active === "overview" || active === "customers" || active === "sales" || active === "services" || active === "settings" ? "" : "hidden"}><DealershipWorkspace activeModule={active} /></div>
