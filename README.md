@@ -98,6 +98,31 @@ Abre [http://localhost:3000](http://localhost:3000), conecta tu wallet y selecci
 
 Puedes obtener SOL de prueba desde el [faucet oficial de Solana](https://faucet.solana.com/).
 
+## Pruebas
+
+Las pruebas unitarias y de interfaz se ejecutan sin conectarse a la blockchain:
+
+```bash
+npm run test
+```
+
+Las pruebas de integración de Devnet son **opt-in y de solo lectura**. Comprueban que el programa desplegado exista como cuenta ejecutable y que la PDA del registro global exista, pertenezca al programa y pueda decodificarse con el decoder generado por Codama. No firman ni envían transacciones y no requieren una wallet ni claves privadas.
+
+En PowerShell:
+
+```powershell
+$env:MOTO_LEDGER_DEVNET_RPC_URL="https://api.devnet.solana.com"
+npm run test:devnet
+```
+
+En macOS/Linux:
+
+```bash
+MOTO_LEDGER_DEVNET_RPC_URL=https://api.devnet.solana.com npm run test:devnet
+```
+
+Si no se configura `MOTO_LEDGER_DEVNET_RPC_URL`, la suite de integración queda omitida durante la ejecución normal de `npm run test`.
+
 ## Scripts
 
 ```bash
@@ -108,8 +133,9 @@ npm run typecheck    # Verificación de TypeScript
 npm run lint         # ESLint
 npm run format       # Formatear con Prettier
 npm run format:check # Comprobar formato
-npm run test         # Ejecutar pruebas
-npm run ci           # Ejecutar build, typecheck, lint, formato y tests
+npm run test         # Pruebas unitarias y de interfaz
+npm run test:devnet  # Pruebas de integración read-only contra Devnet
+npm run ci           # Build, typecheck, lint, formato y tests
 ```
 
 ## Alcance actual
