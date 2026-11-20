@@ -11,12 +11,13 @@ import {
 } from "../../lib/moto-ledger/pdas";
 import type { Concesionario } from "../../lib/moto-ledger/generated/src/generated/accounts";
 import { MotorcycleRegistration } from "./motorcycle-registration";
+import { CustomerManagement } from "./customer-management";
 
 function shortAddress(value: string) {
   return `${value.slice(0, 5)}…${value.slice(-5)}`;
 }
 
-export function DealershipWorkspace() {
+export function DealershipWorkspace({ activeModule }: { activeModule: string }) {
   const client = useAppClient();
   const connected = useConnectedWallet(client);
   const [name, setName] = useState("");
@@ -217,10 +218,24 @@ export function DealershipWorkspace() {
           </div>
         )}
       </section>
-      {dealership && (
+      {dealership && activeModule === "overview" && (
         <div className="xl:col-span-2">
           <MotorcycleRegistration
             concesionario={dealership.address}
+            onRegistered={async () => {
+              const refreshed = await client.registro.accounts.concesionario.fetch(
+                address(dealership.address)
+              );
+              setDealership({ address: dealership.address, data: refreshed.data });
+            }}
+          />
+        </div>
+      )}
+      {dealership && activeModule === "customers" && (
+        <div className="xl:col-span-2">
+          <CustomerManagement
+            concesionario={dealership.address}
+            nombreConcesionario={dealership.data.nombreConcesionario}
             onRegistered={async () => {
               const refreshed = await client.registro.accounts.concesionario.fetch(
                 address(dealership.address)
