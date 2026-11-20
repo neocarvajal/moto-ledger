@@ -153,7 +153,7 @@ export function ServicesManagement({
       return;
     }
     if (!selectedMotorcycle) {
-      toast.error("Selecciona una motocicleta registrada.");
+      toast.error("Selecciona una moto registrada.");
       return;
     }
     const normalizedDescription = description.trim();
@@ -181,7 +181,7 @@ export function ServicesManagement({
       const motoAddress = address(selectedMotorcycle.address);
       const latestMoto = await client.registro.accounts.moto.fetch(motoAddress);
       if (latestMoto.data.concesionario !== concesionario) {
-        throw new Error("La motocicleta ya no pertenece al concesionario seleccionado.");
+        throw new Error("La moto ya no pertenece al concesionario seleccionado.");
       }
 
       const [garantia] = await deriveGarantiaPda(latestMoto.data.serial);
@@ -190,10 +190,10 @@ export function ServicesManagement({
         const warranty = warrantyAccount.data;
         const now = BigInt(Math.floor(Date.now() / 1000));
         if (warranty.estado !== EstadoGarantia.Activa) {
-          throw new Error("La garantía de esta motocicleta no está activa.");
+          throw new Error("La garantía de esta moto no está activa.");
         }
         if (now > warranty.fechaVencimiento) {
-          throw new Error("La garantía de esta motocicleta está vencida.");
+          throw new Error("La garantía de esta moto está vencida.");
         }
         if (mileageValue > warranty.kilometrajeMaximo) {
           throw new Error(`El kilometraje supera el máximo cubierto de ${warranty.kilometrajeMaximo.toString()} km.`);
@@ -235,7 +235,7 @@ export function ServicesManagement({
           <div>
             <p className="text-[9px] font-bold tracking-[0.16em] text-[#e60012]">POSVENTA / TALLER</p>
             <h2 className="mt-2 text-[15px] font-bold text-[#252a30]">Registrar servicio</h2>
-            <p className="mt-1 text-[10px] text-[#858d96]">Registra mantenimientos, reparaciones y trabajos de garantía asociados a una motocicleta.</p>
+            <p className="mt-1 text-[10px] text-[#858d96]">Registra mantenimientos, reparaciones y trabajos de garantía asociados a una moto.</p>
           </div>
           <button type="button" onClick={() => void loadData()} disabled={loading} className="rounded-lg border border-[#e2e5e8] px-3 py-2 text-[10px] font-semibold text-[#555e68] hover:bg-[#f7f8fa] disabled:opacity-50">{loading ? "Actualizando…" : "Actualizar datos"}</button>
         </div>
@@ -243,9 +243,9 @@ export function ServicesManagement({
         <form onSubmit={handleSubmit} className="mt-5 grid gap-4 lg:grid-cols-2">
           <div className="space-y-4">
             <label className="block">
-              <span className="mb-1.5 block text-[10px] font-semibold text-[#555e68]">Motocicleta</span>
+              <span className="mb-1.5 block text-[10px] font-semibold text-[#555e68]">Moto</span>
               <select value={selectedMoto} onChange={(event) => setSelectedMoto(event.target.value)} required disabled={motorcycles.length === 0 || busy} className="w-full rounded-lg border border-[#e2e5e8] bg-white px-3 py-2.5 text-[11px] outline-none focus:border-[#e60012] disabled:bg-[#f7f8fa]">
-                {motorcycles.length === 0 ? <option value="">No hay motocicletas registradas</option> : motorcycles.map((item) => <option key={item.address} value={item.address}>{item.data.marca} {item.data.modelo} · {item.data.serial}{item.data.vendida ? " · Vendida" : ""}</option>)}
+                {motorcycles.length === 0 ? <option value="">No hay motos registradas</option> : motorcycles.map((item) => <option key={item.address} value={item.address}>{item.data.marca} {item.data.modelo} · {item.data.serial}{item.data.vendida ? " · Vendida" : ""}</option>)}
               </select>
             </label>
 
@@ -303,13 +303,13 @@ export function ServicesManagement({
               <span className="mt-1 block text-[9px] text-[#a0a6ad]">Monto entero, sin decimales. Puede ser 0 para trabajos sin costo.</span>
             </label>
             <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#eff0f2] pt-4">
-              <p className="text-[9px] text-[#9299a1]">El registro actualiza el contador de servicios de la motocicleta.</p>
+              <p className="text-[9px] text-[#9299a1]">El registro actualiza el contador de servicios de la moto.</p>
               <button type="submit" disabled={busy || loading || motorcycles.length === 0} className="rounded-lg bg-[#e60012] px-4 py-2.5 text-[10px] font-semibold text-white transition hover:bg-[#c90010] disabled:cursor-not-allowed disabled:opacity-50">{busy ? "Registrando…" : "Registrar servicio"}</button>
             </div>
           </div>
         </form>
         {motorcycles.length === 0 && !loading && (
-          <p className="mt-4 rounded-lg bg-[#fff7f7] p-3 text-[10px] text-[#a34a50]">Registra primero una motocicleta para poder asociarle servicios.</p>
+          <p className="mt-4 rounded-lg bg-[#fff7f7] p-3 text-[10px] text-[#a34a50]">Registra primero una moto para poder asociarle servicios.</p>
         )}
       </section>
 
@@ -325,7 +325,7 @@ export function ServicesManagement({
           <div className="overflow-x-auto">
             <table className="w-full min-w-[850px] text-left">
               <thead className="bg-[#fafbfc] text-[9px] font-bold uppercase tracking-wide text-[#9299a1]">
-                <tr><th className="px-6 py-3">Fecha</th><th className="px-4 py-3">Motocicleta</th><th className="px-4 py-3">Tipo</th><th className="px-4 py-3 text-right">Km</th><th className="px-4 py-3 text-right">Costo</th><th className="px-5 py-3 text-right">Servicio PDA</th><th className="px-4 py-3 text-right">Detalle</th></tr>
+                <tr><th className="px-6 py-3">Fecha</th><th className="px-4 py-3">Moto</th><th className="px-4 py-3">Tipo</th><th className="px-4 py-3 text-right">Km</th><th className="px-4 py-3 text-right">Costo</th><th className="px-5 py-3 text-right">Servicio PDA</th><th className="px-4 py-3 text-right">Detalle</th></tr>
               </thead>
               <tbody className="divide-y divide-[#f0f1f3]">
                 {services.map((item) => (
@@ -374,8 +374,8 @@ export function ServicesManagement({
                 <p className="mt-2 break-all text-[10px] text-[#737b84]">PDA: <a className="font-mono text-[#e60012] hover:underline" href={`https://explorer.solana.com/address/${detail.address}?cluster=devnet`} target="_blank" rel="noopener noreferrer">{detail.address} ↗</a></p>
               </div>
               <div className="rounded-xl border border-[#eff0f2] p-4">
-                <h3 className="text-[11px] font-bold text-[#252a30]">Motocicleta vinculada</h3>
-                {detail.motorcycle ? <><p className="mt-2 text-[13px] font-bold text-[#252a30]">{detail.motorcycle.marca} {detail.motorcycle.modelo}</p><div className="mt-2 grid gap-2 text-[10px] text-[#68717b] sm:grid-cols-2"><p>Serial: <strong className="font-mono text-[#252a30]">{detail.motorcycle.serial}</strong></p><p>Placa: <strong className="font-mono text-[#252a30]">{detail.motorcycle.placa}</strong></p><p>Color: <strong className="text-[#252a30]">{detail.motorcycle.color}</strong></p><p>Vendida: <strong className="text-[#252a30]">{detail.motorcycle.vendida ? "Sí" : "No"}</strong></p></div></> : <p className="mt-2 text-[10px] text-[#9299a1]">No se pudo cargar la cuenta de la motocicleta asociada.</p>}
+                <h3 className="text-[11px] font-bold text-[#252a30]">Moto vinculada</h3>
+                {detail.motorcycle ? <><p className="mt-2 text-[13px] font-bold text-[#252a30]">{detail.motorcycle.marca} {detail.motorcycle.modelo}</p><div className="mt-2 grid gap-2 text-[10px] text-[#68717b] sm:grid-cols-2"><p>Serial: <strong className="font-mono text-[#252a30]">{detail.motorcycle.serial}</strong></p><p>Placa: <strong className="font-mono text-[#252a30]">{detail.motorcycle.placa}</strong></p><p>Color: <strong className="text-[#252a30]">{detail.motorcycle.color}</strong></p><p>Vendida: <strong className="text-[#252a30]">{detail.motorcycle.vendida ? "Sí" : "No"}</strong></p></div></> : <p className="mt-2 text-[10px] text-[#9299a1]">No se pudo cargar la cuenta de la moto asociada.</p>}
                 <p className="mt-3 break-all text-[10px]">Moto PDA: <a className="font-mono text-[#e60012] hover:underline" href={`https://explorer.solana.com/address/${detail.data.moto}?cluster=devnet`} target="_blank" rel="noopener noreferrer">{detail.data.moto} ↗</a></p>
               </div>
               <div className="rounded-xl border border-[#eff0f2] p-4">
