@@ -261,6 +261,18 @@ export function ServicesManagement({
                   <p>Color: <strong className="text-[#424950]">{selectedMotorcycle.data.color}</strong></p>
                   <p>Servicios previos: <strong className="text-[#424950]">{selectedMotorcycle.data.servicios.toString()}</strong></p>
                 </div>
+                <div className="mt-3 border-t border-[#e9ebee] pt-3">
+                  <p className="text-[9px] font-bold tracking-wide text-[#9299a1]">MOTO PDA</p>
+                  <a
+                    href={`https://explorer.solana.com/address/${selectedMotorcycle.address}?cluster=devnet`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={selectedMotorcycle.address}
+                    className="mt-1 inline-flex break-all font-mono text-[10px] text-[#68717b] underline decoration-dotted underline-offset-2 hover:text-[#e60012]"
+                  >
+                    {selectedMotorcycle.address} ↗
+                  </a>
+                </div>
               </div>
             )}
 
