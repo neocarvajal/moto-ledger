@@ -11,7 +11,8 @@ import { useConnectedWallet } from "@solana/kit-plugin-wallet/react";
 import { toast } from "sonner";
 import { useAppClient } from "../../lib/client-provider";
 import { notifyTransactionSuccess } from "../../lib/transaction-toast";
-import { deriveClientePda } from "../../lib/moto-ledger/pdas";
+import { deriveClientePda, deriveVentaPda } from "../../lib/moto-ledger/pdas";
+import { REGISTRO_PROGRAM_ADDRESS } from "../../lib/moto-ledger/generated/src/generated/programs";
 import {
   getMotoDecoder,
   getMotoDiscriminatorBytes,
@@ -59,7 +60,6 @@ export function SalesManagement({
   const [cedula, setCedula] = useState("");
   const [price, setPrice] = useState("");
   const [customerName, setCustomerName] = useState("");
-  const [customerAddress, setCustomerAddress] = useState("");
   const [loading, setLoading] = useState(false);
   const [busy, setBusy] = useState(false);
 
@@ -82,7 +82,7 @@ export function SalesManagement({
 
       const [motoResults, ventaResults] = await Promise.all([
         client.rpc.getProgramAccounts(
-          (await import("../../lib/moto-ledger/generated/src/generated/programs")).REGISTRO_PROGRAM_ADDRESS,
+          REGISTRO_PROGRAM_ADDRESS,
           {
             encoding: "base64",
             filters: [
@@ -91,7 +91,7 @@ export function SalesManagement({
           }
         ).send(),
         client.rpc.getProgramAccounts(
-          (await import("../../lib/moto-ledger/generated/src/generated/programs")).REGISTRO_PROGRAM_ADDRESS,
+          REGISTRO_PROGRAM_ADDRESS,
           {
             encoding: "base64",
             filters: [
@@ -145,7 +145,6 @@ export function SalesManagement({
       throw new Error("El cliente no pertenece a la wallet conectada.");
     }
     setCustomerName(account.data.nombreCliente);
-    setCustomerAddress(pda);
     return { id, pda };
   };
 
@@ -154,7 +153,6 @@ export function SalesManagement({
       await lookupCustomer(cedula);
     } catch (error) {
       setCustomerName("");
-      setCustomerAddress("");
       toast.error(error instanceof Error ? error.message : "No se encontró el cliente.");
     }
   };
@@ -194,9 +192,7 @@ export function SalesManagement({
       if (!motorcycle) throw new Error("La motocicleta seleccionada ya no está disponible.");
       if (motorcycle.data.vendida) throw new Error("Esta motocicleta ya fue vendida.");
 
-      const [venta] = await (await import("../../lib/moto-ledger/pdas")).deriveVentaPda(
-        address(motorcycle.address)
-      );
+      const [venta] = await deriveVentaPda(address(motorcycle.address));
       const instruction = client.registro.instructions.registrarVenta({
         owner: connected.signer,
         concesionario: dealerAddress,
