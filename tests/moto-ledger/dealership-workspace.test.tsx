@@ -125,7 +125,8 @@ function setAccountResults() {
   );
 }
 
-describe("MotoLedger dealership workspace", () => {\n  afterEach(() => cleanup());
+describe("MotoLedger dealership workspace", () => {
+  afterEach(() => cleanup());
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.activeWallet = mocks.connected;
